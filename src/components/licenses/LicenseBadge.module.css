@@ -1,0 +1,8 @@
+.symbols {
+  font-family: var(--font-ccsymbols);
+  font-weight: 300;
+  font-size: 1rem;
+  margin-left: 0.4rem;
+  vertical-align: bottom;
+  letter-spacing: 0.2rem;
+}

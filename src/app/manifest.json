@@ -1,0 +1,7 @@
+{
+  "name": "Open Newswire",
+  "short_name": "Open Newswire",
+  "description": "Free-use news from around the world",
+  "start_url": "/",
+  "display": "standalone"
+}

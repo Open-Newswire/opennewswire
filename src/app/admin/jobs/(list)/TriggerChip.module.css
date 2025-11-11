@@ -1,0 +1,15 @@
+.root {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+
+  svg {
+    width: 1rem;
+    margin-right: 0.2rem;
+    margin-left: -0.2rem;
+  }
+}

@@ -1,0 +1,203 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+generator kysely {
+  provider = "prisma-kysely"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model License {
+  id              String   @id @default(cuid())
+  slug            String?  @unique
+  createdAt       DateTime @default(now())
+  name            String
+  symbols         String?
+  backgroundColor String
+  textColor       String
+  feeds           Feed[]
+
+  @@index([slug])
+}
+
+model Language {
+  id        String   @id @default(cuid())
+  slug      String?  @unique
+  createdAt DateTime @default(now())
+  name      String
+  isRtl     Boolean  @default(false)
+  order     Int      @default(0)
+  feeds     Feed[]
+
+  @@index([slug])
+}
+
+model Feed {
+  id                 String     @id @default(cuid())
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime?
+  isActive           Boolean    @default(true)
+  title              String
+  url                String
+  iconSource         IconSource @default(NONE)
+  iconUrl            String?
+  iconAssetUrl       String?
+  description        String?
+  backgroundColor    String
+  textColor          String
+  filterKeywords     String?
+  licenseId          String?
+  licenseUrl         String?
+  licenseText        String?
+  languageId         String?
+  lastModifiedHeader String?
+  etag               String?
+  contentSource      ContentSource @default(AUTOMATIC)
+  articles           Article[]
+  language           Language?  @relation(fields: [languageId], references: [id])
+  license            License?   @relation(fields: [licenseId], references: [id])
+  syncJobs           SyncJob[]
+
+  @@index([title])
+  @@index([url])
+}
+
+model Article {
+  id             String                   @id @default(cuid())
+  createdAt      DateTime                 @default(now())
+  guid           String?
+  title          String
+  author         String?
+  link           String
+  date           DateTime?
+  content        String?
+  isHidden       Boolean                  @default(false)
+  feedId         String
+  feed           Feed                     @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  tsEn           Unsupported("tsvector")? @default(dbgenerated())
+  AnalyticsEvent AnalyticsEvent[]
+
+  @@unique([guid, feedId], name: "guidFeedId")
+  @@index([tsEn], type: Gin)
+  @@index([date, isHidden])
+  @@index([isHidden])
+  @@index([guid])
+  @@index([date])
+  @@index([title])
+  @@index([feedId])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  name          String
+  email         String    @unique
+  password_hash String
+  sessions      Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SyncJob {
+  id           String    @id @default(cuid())
+  status       Status    @default(NOT_STARTED)
+  trigger      Trigger
+  triggeredAt  DateTime  @default(now())
+  completedAt  DateTime?
+  feedId       String?
+  parentId     String?
+  log          Json?
+  totalSuccess Int?
+  totalFailure Int?
+  feed         Feed?     @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  parent       SyncJob?  @relation("ParentChildren", fields: [parentId], references: [id])
+  children     SyncJob[] @relation("ParentChildren")
+
+  @@index([status])
+  @@index([trigger])
+  @@index([feedId])
+  @@index([triggeredAt])
+  @@index([parentId])
+}
+
+model AppPreference {
+  key   String @id
+  value Json
+}
+
+model AnalyticsEvent {
+  id                String             @id @default(cuid())
+  occuredAt         DateTime           @default(now())
+  sessionId         String
+  eventType         AnalyticsEventType
+  browserLanguage   String?
+  ipAddress         String?
+  countryCode       String?
+  regionCode        String?
+  city              String?
+  articleId         String?
+  selectedLanguages String[]
+  selectedLicenses  String[]
+  searchQuery       String?
+  article           Article?           @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  isEnriched        Boolean            @default(false)
+  enrichmentStatus  EnrichmentStatus   @default(PENDING)
+  enrichmentError   String?
+
+  @@index([occuredAt], type: Brin)
+  @@index([sessionId])
+}
+
+model IpAddressCache {
+  ipAddress        String             @id
+  countryCode      String?
+  regionCode       String?
+  city             String?
+}
+
+enum Status {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum Trigger {
+  MANUAL
+  AUTOMATIC
+}
+
+enum IconSource {
+  NONE
+  UPLOAD
+  FAVICON
+}
+
+enum AnalyticsEventType {
+  QUERY
+  INTERACTION
+}
+
+enum EnrichmentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum ContentSource {
+  AUTOMATIC
+  CONTENT
+  CONTENT_SNIPPET
+  SUMMARY
+}

@@ -1,0 +1,19 @@
+.header {
+  transition: height var(--app-shell-transition-duration) ease-out;
+}
+
+.innerheader {
+  align-items: center;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    justify-content: space-between;
+  }
+}
+
+.menugroup {
+  padding-inline: var(--mantine-spacing-lg);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding-inline: var(--mantine-spacing-xs);
+  }
+}

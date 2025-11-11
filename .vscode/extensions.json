@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "vitest.explorer",
+        "prisma.prisma",
+        "esbenp.prettier-vscode"
+    ]
+}

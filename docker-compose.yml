@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: opennewswire
+      POSTGRES_USER: opennewswire
+      POSTGRES_PASSWORD: informationwantstobefree
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  
+  qstash:
+    image: public.ecr.aws/upstash/qstash:latest
+    ports:
+      - "8080:8080"
+    command: qstash dev
+
+volumes:
+  postgres_data:
+    driver: local

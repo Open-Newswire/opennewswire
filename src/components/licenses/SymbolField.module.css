@@ -1,0 +1,12 @@
+.input {
+  font-family: var(--font-ccsymbols);
+  font-size: 1.2rem;
+  letter-spacing: 0.4rem;
+}
+
+.button {
+  font-family: var(--font-ccsymbols);
+  font-size: 1.5rem;
+  font-weight: 400;
+  padding: 0;
+}

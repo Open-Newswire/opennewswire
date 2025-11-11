@@ -1,0 +1,15 @@
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--mantine-radius-md);
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-lg);
+  background-color: var(--mantine-color-gray-1);
+  margin-bottom: var(--mantine-spacing-xs);
+}
+
+.scrollContainer {
+  margin: var(--mantine-spacing-lg) 0;
+  max-height: 500px;
+  overflow-y: scroll;
+}

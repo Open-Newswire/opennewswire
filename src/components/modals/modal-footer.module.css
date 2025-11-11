@@ -1,0 +1,10 @@
+.footer {
+  justify-content: flex-end;
+  position: sticky;
+  bottom: 0;
+  padding-top: var(--mantine-spacing-lg);
+  padding-bottom: var(--mantine-spacing-lg);
+  margin-top: var(--mantine-spacing-lg);
+  margin-bottom: calc(var(--mantine-spacing-lg) * -1);
+  background-color: var(--mantine-color-default);
+}
