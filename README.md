@@ -45,9 +45,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deployment
 
-Open Newswire is deployed to the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Open Newswire is deployed to the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme). Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 ## Working with Prisma
 
