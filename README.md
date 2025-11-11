@@ -6,14 +6,6 @@ This repository is licensed under the MIT License.
 
 ## Getting Started
 
-First, run the development server:
-
-```bash
-npm run dev
-```
-
-## Getting Started
-
 ### Installing Dependencies
 
 Use npm to install dependencies.
@@ -22,7 +14,7 @@ Use npm to install dependencies.
 npm i
 ```
 
-## Start the Development Environment
+### Start the Development Environment
 
 First, ensure Docker is installed. Then, run:
 
@@ -38,7 +30,7 @@ Then, start the development server by running:
 npm run dev
 ```
 
-## Access the Application Locally
+### Access Open Newswire Locally
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -51,7 +43,7 @@ Open Newswire is built on top of the Next.js framework. To learn more about Next
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deployment
 
 Open Newswire is deployed to the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
 
