@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { compactAuthors } from "./utils";
+import { compactAuthors, getTextContent } from "./utils";
 
 describe("compactAuthors", () => {
   it("should return undefined for null or undefined input", () => {
@@ -98,5 +98,109 @@ describe("compactAuthors", () => {
         "jane@example.com (Jane Smith)",
       ]),
     ).toBe("john@example.com (John Doe), jane@example.com (Jane Smith)");
+  });
+});
+
+describe("getTextContent", () => {
+  it("should return string as-is", () => {
+    expect(getTextContent("Simple string")).toBe("Simple string");
+    expect(getTextContent("")).toBe("");
+  });
+
+  it("should extract text from object with #text property", () => {
+    const obj = {
+      "#text": "Text content",
+      $type: "text",
+    };
+    expect(getTextContent(obj)).toBe("Text content");
+  });
+
+  it("should extract text from object with _ property (legacy format)", () => {
+    const obj = {
+      _: "Text content",
+      type: "text",
+    };
+    expect(getTextContent(obj)).toBe("Text content");
+  });
+
+  it("should prefer #text over _ when both are present", () => {
+    const obj = {
+      "#text": "Primary text",
+      _: "Fallback text",
+    };
+    expect(getTextContent(obj)).toBe("Primary text");
+  });
+
+  it("should decode HTML entities when $type is html", () => {
+    const obj = {
+      "#text": "Title with &#8216;quotes&#8217; and &amp; ampersand",
+      $type: "html",
+    };
+    expect(getTextContent(obj)).toBe("Title with 'quotes' and & ampersand");
+  });
+
+  it("should not decode HTML entities when $type is text", () => {
+    const obj = {
+      "#text": "Title with &amp; ampersand",
+      $type: "text",
+    };
+    expect(getTextContent(obj)).toBe("Title with &amp; ampersand");
+  });
+
+  it("should not decode HTML entities when $type is absent", () => {
+    const obj = {
+      "#text": "Title with &amp; ampersand",
+    };
+    expect(getTextContent(obj)).toBe("Title with &amp; ampersand");
+  });
+
+  it("should decode common HTML entities correctly", () => {
+    const testCases = [
+      {
+        input: { "#text": "&#8220;curly quotes&#8221;", $type: "html" },
+        expected: ""curly quotes"",
+      },
+      {
+        input: { "#text": "Em&mdash;dash", $type: "html" },
+        expected: "Em—dash",
+      },
+      {
+        input: { "#text": "Non&nbsp;breaking&nbsp;space", $type: "html" },
+        expected: "Non breaking space",
+      },
+      {
+        input: { "#text": "&lt;tag&gt;", $type: "html" },
+        expected: "<tag>",
+      },
+    ];
+
+    testCases.forEach(({ input, expected }) => {
+      expect(getTextContent(input)).toBe(expected);
+    });
+  });
+
+  it("should return non-object, non-string values unchanged", () => {
+    expect(getTextContent(123)).toBe(123);
+    expect(getTextContent(true)).toBe(true);
+    expect(getTextContent(null)).toBe(null);
+    expect(getTextContent(undefined)).toBe(undefined);
+  });
+
+  it("should return object without #text or _ unchanged", () => {
+    const obj = { foo: "bar", baz: "qux" };
+    expect(getTextContent(obj)).toEqual(obj);
+  });
+
+  it("should handle object with #text undefined", () => {
+    const obj = { "#text": undefined };
+    expect(getTextContent(obj)).toEqual(obj);
+  });
+
+  it("should handle empty string in #text with html type", () => {
+    const obj = {
+      "#text": "",
+      $type: "html",
+    };
+    expect(getTextContent(obj)).toBe("");
   });
 });
