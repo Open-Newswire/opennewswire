@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:latest
@@ -9,10 +7,10 @@ services:
       POSTGRES_USER: opennewswire
       POSTGRES_PASSWORD: informationwantstobefree
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     ports:
       - "5432:5432"
-  
+
   qstash:
     image: public.ecr.aws/upstash/qstash:latest
     ports:
