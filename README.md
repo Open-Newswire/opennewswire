@@ -51,6 +51,20 @@ Open Newswire is deployed to the [Vercel Platform](https://vercel.com/new?utm_me
 
 This project uses Prisma to manage database models and migrations.
 
+### Seeding Initial Data (for first-run local development)
+
+First, run the migrations:
+
+```
+npx prisma db push
+```
+
+Then, apply the seeds:
+
+```bash
+npx prisma db seed
+```
+
 ### Creating Migrations
 
 To create a new database migration, run `npx prisma migrate dev --name <name>`, where `<name>` is a unique name identifying the contents of the migration.
