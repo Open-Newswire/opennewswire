@@ -55,8 +55,10 @@ async function fetchIconFromRootDomain(url: string) {
     $('link[rel="alternate icon"]').attr("href") ||
     $('link[rel="icon"]').attr("href");
 
-  if (faviconPath && faviconPath.startsWith("http")) {
-    return faviconPath;
+  if (faviconPath) {
+    return faviconPath.startsWith("http")
+      ? faviconPath
+      : `http://${domain}${faviconPath}`;
   }
 
   return null;
