@@ -1,5 +1,8 @@
 import { QStashScheduler } from "@/lib/qstash-scheduler";
 
+const PLATFORM = process.env.PLATFORM ?? "";
+const NAME_SUFFIX = process.env.NODE_ENV + "-" + PLATFORM;
+
 // Schedule defines a unique scheduled API callback to Open Newswire
 export interface Schedule {
   // Unique name
@@ -30,22 +33,22 @@ export const scheduler: Scheduler = new QStashScheduler();
 // Defines all schedule types
 export const schedules: Record<string, Schedule> = {
   enrichEvents: {
-    name: "enrich-events-" + process.env.NODE_ENV,
+    name: "enrich-events-" + NAME_SUFFIX,
     path: "/api/jobs/enrich-events",
     defaultCron: "*/15 * * * *",
   },
   cleanupJobs: {
-    name: "cleanup-jobs-" + process.env.NODE_ENV,
+    name: "cleanup-jobs-" + NAME_SUFFIX,
     path: "/api/jobs/cleanup-jobs",
     defaultCron: "0 11 * * *",
   },
   cleanupArticles: {
-    name: "cleanup-articles-" + process.env.NODE_ENV,
+    name: "cleanup-articles-" + NAME_SUFFIX,
     path: "/api/jobs/cleanup-articles",
     defaultCron: "0 0 * * *",
   },
   syncAll: {
-    name: "sync-all-" + process.env.NODE_ENV,
+    name: "sync-all-" + NAME_SUFFIX,
     path: "/api/jobs/sync-all",
   },
 };
