@@ -104,14 +104,14 @@ async function fetchFeed(url: string, feed: Feed): Promise<FetchResult> {
     signal: AbortSignal.timeout(7000),
   });
 
+  if (response.status === StatusCodes.NOT_MODIFIED) {
+    return { status: FetchStatus.NotModified };
+  }
+
   if (!response.ok) {
     throw new Error(
       `Feed provider returned a non-ok HTTP status code: ${response.status} ${response.statusText}`,
     );
-  }
-
-  if (response.status === StatusCodes.NOT_MODIFIED) {
-    return { status: FetchStatus.NotModified };
   }
 
   const body = await response.text();
