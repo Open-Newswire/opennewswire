@@ -136,7 +136,8 @@ describe("getTextContent", () => {
       "#text": "Title with &#8216;quotes&#8217; and &amp; ampersand",
       $type: "html",
     };
-    expect(getTextContent(obj)).toBe("Title with 'quotes' and & ampersand");
+    // &#8216; = ' (left single quote), &#8217; = ' (right single quote)
+    expect(getTextContent(obj)).toBe("Title with \u2018quotes\u2019 and & ampersand");
   });
 
   it("should not decode HTML entities when $type is text", () => {
@@ -158,15 +159,15 @@ describe("getTextContent", () => {
     const testCases = [
       {
         input: { "#text": "&#8220;curly quotes&#8221;", $type: "html" },
-        expected: ""curly quotes"",
+        expected: "\u201Ccurly quotes\u201D", // " and "
       },
       {
         input: { "#text": "Em&mdash;dash", $type: "html" },
-        expected: "Em—dash",
+        expected: "Em\u2014dash", // —
       },
       {
         input: { "#text": "Non&nbsp;breaking&nbsp;space", $type: "html" },
-        expected: "Non breaking space",
+        expected: "Non\u00A0breaking\u00A0space", // non-breaking spaces
       },
       {
         input: { "#text": "&lt;tag&gt;", $type: "html" },

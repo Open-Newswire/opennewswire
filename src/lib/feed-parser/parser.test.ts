@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { Parser } from "./parser";
-import { ParserOutput, Item } from "./types";
 
 describe("Parser", () => {
   let parser: Parser;
@@ -505,9 +504,11 @@ describe("Parser", () => {
       expect(typeof result.title).toBe("string");
       expect(typeof result.items[0].title).toBe("string");
 
-      // HTML entities should be decoded
-      expect(result.title).toBe("Feed Title with 'HTML' entities");
-      expect(result.items[0].title).toBe("LAUSD receives mostly 'B' grades from district parents, survey reveals");
+      // HTML entities should be decoded (&#8216; = ', &#8217; = ')
+      expect(result.title).toBe("Feed Title with \u2018HTML\u2019 entities");
+      expect(result.items[0].title).toBe(
+        "LAUSD receives mostly \u2018B\u2019 grades from district parents, survey reveals",
+      );
     });
 
     it("should handle Atom feed with summary and content having type='html' attribute", async () => {
@@ -529,10 +530,16 @@ describe("Parser", () => {
       const result = await parser.parseString(atomFeed);
 
       // Summary and content should be extracted as strings with decoded entities
+      // &#8220; = " (left double quote), &#8221; = " (right double quote)
+      // &mdash; = — (em dash), &nbsp; = non-breaking space
       expect(typeof result.items[0].summary).toBe("string");
       expect(typeof result.items[0].content).toBe("string");
-      expect(result.items[0].summary).toBe("Summary with "curly quotes" and — dashes");
-      expect(result.items[0].content).toBe("Content with   non-breaking spaces");
+      expect(result.items[0].summary).toBe(
+        'Summary with \u201Ccurly quotes\u201D and \u2014 dashes',
+      );
+      expect(result.items[0].content).toBe(
+        "Content with \u00A0 non-breaking spaces",
+      );
     });
 
     it("should handle Atom feed with author names having type attribute", async () => {
@@ -747,7 +754,9 @@ describe("Parser", () => {
 
       const result = await parser.parseString(atomFeed);
 
-      expect(result.items[0].author).toBe("Emily Davis, Frank Miller, Grace Lee");
+      expect(result.items[0].author).toBe(
+        "Emily Davis, Frank Miller, Grace Lee",
+      );
     });
 
     it("should handle single author object in Atom feed", async () => {
