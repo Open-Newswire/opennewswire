@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { Parser } from "./parser";
-import { ParserOutput, Item } from "./types";
 
 describe("Parser", () => {
   let parser: Parser;
@@ -483,6 +482,122 @@ describe("Parser", () => {
       expect(result.title).toBeDefined();
       expect(result.items[0].title).toBeDefined();
     });
+
+    it("should handle Atom feed with title having type='html' attribute", async () => {
+      const atomFeed = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title type="html">Feed Title with &amp;#8216;HTML&amp;#8217; entities</title>
+  <link href="https://example.com" rel="alternate" />
+  <updated>2025-11-09T10:00:00Z</updated>
+  <entry>
+    <title type="html">LAUSD receives mostly &amp;#8216;B&amp;#8217; grades from district parents, survey reveals</title>
+    <link href="https://example.com/article1" rel="alternate" />
+    <id>article1</id>
+    <updated>2025-11-09T09:00:00Z</updated>
+    <content>Content</content>
+  </entry>
+</feed>`;
+
+      const result = await parser.parseString(atomFeed);
+
+      // Title should be extracted as a string (not an object)
+      expect(typeof result.title).toBe("string");
+      expect(typeof result.items[0].title).toBe("string");
+
+      // HTML entities should be decoded (&#8216; = ', &#8217; = ')
+      expect(result.title).toBe("Feed Title with \u2018HTML\u2019 entities");
+      expect(result.items[0].title).toBe(
+        "LAUSD receives mostly \u2018B\u2019 grades from district parents, survey reveals",
+      );
+    });
+
+    it("should handle Atom feed with summary and content having type='html' attribute", async () => {
+      const atomFeed = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Feed</title>
+  <link href="https://example.com" rel="alternate" />
+  <updated>2025-11-09T10:00:00Z</updated>
+  <entry>
+    <title>Article</title>
+    <link href="https://example.com/article1" rel="alternate" />
+    <id>article1</id>
+    <updated>2025-11-09T09:00:00Z</updated>
+    <summary type="html">Summary with &amp;#8220;curly quotes&amp;#8221; and &amp;mdash; dashes</summary>
+    <content type="html">Content with &amp;nbsp; non-breaking spaces</content>
+  </entry>
+</feed>`;
+
+      const result = await parser.parseString(atomFeed);
+
+      // Summary and content should be extracted as strings with decoded entities
+      // &#8220; = " (left double quote), &#8221; = " (right double quote)
+      // &mdash; = — (em dash), &nbsp; = non-breaking space
+      expect(typeof result.items[0].summary).toBe("string");
+      expect(typeof result.items[0].content).toBe("string");
+      expect(result.items[0].summary).toBe(
+        'Summary with \u201Ccurly quotes\u201D and \u2014 dashes',
+      );
+      expect(result.items[0].content).toBe(
+        "Content with \u00A0 non-breaking spaces",
+      );
+    });
+
+    it("should handle Atom feed with author names having type attribute", async () => {
+      const atomFeed = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Feed</title>
+  <link href="https://example.com" rel="alternate" />
+  <updated>2025-11-09T10:00:00Z</updated>
+  <entry>
+    <title>Article</title>
+    <link href="https://example.com/article1" rel="alternate" />
+    <id>article1</id>
+    <updated>2025-11-09T09:00:00Z</updated>
+    <author>
+      <name type="text">John Doe</name>
+      <email>john@example.com</email>
+    </author>
+    <content>Content</content>
+  </entry>
+</feed>`;
+
+      const result = await parser.parseString(atomFeed);
+
+      // Author should be extracted as string
+      expect(typeof result.items[0].author).toBe("string");
+      expect(result.items[0].author).toBe("John Doe");
+    });
+
+    it("should handle mixed text types in Atom feed", async () => {
+      const atomFeed = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Plain Text Title</title>
+  <link href="https://example.com" rel="alternate" />
+  <updated>2025-11-09T10:00:00Z</updated>
+  <entry>
+    <title type="html">HTML Title with &amp;amp; ampersand</title>
+    <link href="https://example.com/article1" rel="alternate" />
+    <id>article1</id>
+    <updated>2025-11-09T09:00:00Z</updated>
+    <summary type="text">Plain summary</summary>
+    <content type="html">HTML content with &amp;lt; entities</content>
+  </entry>
+</feed>`;
+
+      const result = await parser.parseString(atomFeed);
+
+      // All should be strings
+      expect(typeof result.title).toBe("string");
+      expect(typeof result.items[0].title).toBe("string");
+      expect(typeof result.items[0].summary).toBe("string");
+      expect(typeof result.items[0].content).toBe("string");
+
+      // HTML entities should only be decoded for type="html"
+      expect(result.title).toBe("Plain Text Title");
+      expect(result.items[0].title).toBe("HTML Title with & ampersand");
+      expect(result.items[0].summary).toBe("Plain summary");
+      expect(result.items[0].content).toBe("HTML content with < entities");
+    });
   });
 
   describe("RSS 0.9 feeds", () => {
@@ -639,7 +754,9 @@ describe("Parser", () => {
 
       const result = await parser.parseString(atomFeed);
 
-      expect(result.items[0].author).toBe("Emily Davis, Frank Miller, Grace Lee");
+      expect(result.items[0].author).toBe(
+        "Emily Davis, Frank Miller, Grace Lee",
+      );
     });
 
     it("should handle single author object in Atom feed", async () => {

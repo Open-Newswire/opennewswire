@@ -15,6 +15,42 @@ export function getSnippet(str: string | undefined) {
   return str ? decodeHTML(stripHtml(str)).trim() : undefined;
 }
 
+/**
+ * Extracts text content from an XML element that may be a string or object.
+ * Handles fast-xml-parser format where elements with attributes become objects
+ * with #text for content and $ prefixed properties for attributes.
+ * Automatically decodes HTML entities when content type is "html".
+ *
+ * @param value - The value to extract text from (string or object)
+ * @returns The extracted text string or the original value
+ */
+export function getTextContent(value: any): any {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "object" && value !== null) {
+    let text: string | undefined;
+    // Check for #text property (standard fast-xml-parser format)
+    if (value["#text"] !== undefined) {
+      text = value["#text"];
+    }
+    // Fallback to _ property (legacy format)
+    else if (value._ !== undefined) {
+      text = value._;
+    }
+
+    // If we extracted text and type is html, decode HTML entities
+    if (text !== undefined && value.$type === "html") {
+      return decodeHTML(text);
+    }
+
+    if (text !== undefined) {
+      return text;
+    }
+  }
+  return value;
+}
+
 export function getLink(links: any[], rel: string, fallbackIdx: number) {
   if (!links || !Array.isArray(links)) return;
   for (let i = 0; i < links.length; ++i) {
@@ -24,8 +60,10 @@ export function getLink(links: any[], rel: string, fallbackIdx: number) {
 }
 
 export function getContent(content: any) {
-  if (typeof content._ === "string") {
-    return content._;
+  // Extract text content if it's an object with #text or _ property
+  const textContent = getTextContent(content);
+  if (typeof textContent === "string") {
+    return textContent;
   } else if (typeof content === "object") {
     let builder = new XMLBuilder({
       format: false,
@@ -69,8 +107,9 @@ export function copyFromXML(
       dest[to] = value;
     }
 
-    if (dest[to] && typeof dest[to]._ === "string") {
-      dest[to] = dest[to]._;
+    // Extract text content from objects with #text or _ properties
+    if (dest[to]) {
+      dest[to] = getTextContent(dest[to]);
     }
 
     if (includeSnippet && dest[to] && typeof dest[to] === "string") {
@@ -134,7 +173,7 @@ export function compactAuthors(authors: any): string | undefined {
       .map((author) => {
         // Handle author objects with name property (Atom format)
         if (typeof author === "object" && author !== null && author.name) {
-          return author.name;
+          return getTextContent(author.name);
         }
         // Handle string authors (RSS format)
         if (typeof author === "string") {
@@ -149,7 +188,7 @@ export function compactAuthors(authors: any): string | undefined {
 
   // Handle single author object (Atom format)
   if (typeof authors === "object" && authors !== null && authors.name) {
-    return authors.name;
+    return getTextContent(authors.name);
   }
 
   return undefined;

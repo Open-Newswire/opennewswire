@@ -60,8 +60,7 @@ export class Parser {
     }
 
     if (xmlObj.feed.title) {
-      let title = xmlObj.feed.title || "";
-      if (title._) title = title._;
+      const title = utils.getTextContent(xmlObj.feed.title);
       if (title) feed.title = title;
     }
 
@@ -82,8 +81,7 @@ export class Parser {
     // utils.copyFromXML(entry, item, this.options.customFields.item);
 
     if (entry.title) {
-      let title = entry.title || "";
-      if (title._) title = title._;
+      const title = utils.getTextContent(entry.title);
       if (title) item.title = title;
     }
 
