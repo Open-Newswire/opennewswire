@@ -1,7 +1,8 @@
 import { qstashClient } from "@/lib/qstash";
 import { MessageBroker, MessageBrokerPayload } from "./dispatcher";
 
-const QUEUE_NAME = "sync-jobs";
+const PLATFORM = process.env.PLATFORM ? "-" + process.env.PLATFORM : "";
+const QUEUE_NAME = "sync-jobs" + PLATFORM;
 
 const queueFn = qstashClient.queue;
 
