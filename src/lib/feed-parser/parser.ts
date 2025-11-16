@@ -26,7 +26,7 @@ export class Parser {
       const result = await this.xmlParser.parse(xml);
 
       if (!result) {
-        throw new Error("Unable to parse XML.");
+        throw new Error("Parser result is empty.");
       }
 
       let feed = null;
@@ -40,12 +40,12 @@ export class Parser {
       } else if (result.rss?.$version?.match(/0\.9/)) {
         feed = this.buildRSS0_9(result);
       } else {
-        throw new Error("Feed not recognized as RSS 1 or 2.");
+        throw new Error("Feed not recognized as Atom or RSS 0.9, 1 or 2.");
       }
 
       return feed;
     } catch (err) {
-      throw new Error("Unable to parse XML." + err);
+      throw new Error("Unable to parse feed: " + err);
     }
   }
 

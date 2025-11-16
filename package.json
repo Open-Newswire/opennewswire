@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev-jobs": "ts-node ./scripts/dev-job-listener",
+    "debug-feed": "ts-node ./scripts/debug-feed.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

@@ -27,6 +27,20 @@
           "uriFormat": "%s",
           "webRoot": "${workspaceFolder}"
         }
+      },
+      {
+        "name": "Debug Feed Parser",
+        "type": "node-terminal",
+        "request": "launch",
+        "command": "npm run debug-feed ${input:feedUrl}"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "feedUrl",
+        "type": "promptString",
+        "description": "Enter the feed URL to debug",
+        "default": "https://example.com/feed.xml"
       }
     ]
   }
