@@ -102,9 +102,10 @@ describe("compactAuthors", () => {
 });
 
 describe("getTextContent", () => {
-  it("should return string as-is", () => {
+  it("should return plain string after decoding HTML entities", () => {
     expect(getTextContent("Simple string")).toBe("Simple string");
     expect(getTextContent("")).toBe("");
+    expect(getTextContent("String with &amp; entity")).toBe("String with & entity");
   });
 
   it("should extract text from object with #text property", () => {
@@ -140,19 +141,19 @@ describe("getTextContent", () => {
     expect(getTextContent(obj)).toBe("Title with \u2018quotes\u2019 and & ampersand");
   });
 
-  it("should not decode HTML entities when $type is text", () => {
+  it("should decode HTML entities when $type is text", () => {
     const obj = {
       "#text": "Title with &amp; ampersand",
       $type: "text",
     };
-    expect(getTextContent(obj)).toBe("Title with &amp; ampersand");
+    expect(getTextContent(obj)).toBe("Title with & ampersand");
   });
 
-  it("should not decode HTML entities when $type is absent", () => {
+  it("should decode HTML entities when $type is absent", () => {
     const obj = {
       "#text": "Title with &amp; ampersand",
     };
-    expect(getTextContent(obj)).toBe("Title with &amp; ampersand");
+    expect(getTextContent(obj)).toBe("Title with & ampersand");
   });
 
   it("should decode common HTML entities correctly", () => {

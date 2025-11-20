@@ -592,7 +592,7 @@ describe("Parser", () => {
       expect(typeof result.items[0].summary).toBe("string");
       expect(typeof result.items[0].content).toBe("string");
 
-      // HTML entities should only be decoded for type="html"
+      // HTML entities should be decoded for all content
       expect(result.title).toBe("Plain Text Title");
       expect(result.items[0].title).toBe("HTML Title with & ampersand");
       expect(result.items[0].summary).toBe("Plain summary");
@@ -630,7 +630,7 @@ describe("Parser", () => {
       const invalidXml = "This is not XML";
 
       await expect(parser.parseString(invalidXml)).rejects.toThrow(
-        "Unable to parse XML",
+        "Unable to parse feed",
       );
     });
 
@@ -842,6 +842,133 @@ describe("Parser", () => {
       const result = await parser.parseString(rss1Feed);
 
       expect(result.items[0].creator).toBe("Author One, Author Two");
+    });
+  });
+
+  describe("HTML entity decoding in RSS feeds", () => {
+    it("should decode HTML entities in RSS 2.0 item titles", async () => {
+      const rss2Feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Feed Title</title>
+    <link>https://example.com</link>
+    <item>
+      <title>Article with &amp;quot;quotes&amp;quot; and &amp;amp; ampersand</title>
+      <description>Content here</description>
+    </item>
+  </channel>
+</rss>`;
+
+      const result = await parser.parseString(rss2Feed);
+
+      expect(result.items[0].title).toBe('Article with "quotes" and & ampersand');
+    });
+
+    it("should decode HTML entities in RSS 2.0 item descriptions", async () => {
+      const rss2Feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Feed Title</title>
+    <link>https://example.com</link>
+    <item>
+      <title>Article</title>
+      <description>Content with &amp;lt;tag&amp;gt; and &amp;apos;apostrophes&amp;apos;</description>
+    </item>
+  </channel>
+</rss>`;
+
+      const result = await parser.parseString(rss2Feed);
+
+      expect(result.items[0].content).toBe("Content with <tag> and 'apostrophes'");
+    });
+
+    it("should decode numeric HTML entities in RSS 2.0 feeds", async () => {
+      const rss2Feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Feed with &#8216;curly&#8217; quotes</title>
+    <link>https://example.com</link>
+    <item>
+      <title>Article &#8212; with &#8220;entities&#8221;</title>
+      <description>Content with &#169; copyright symbol</description>
+    </item>
+  </channel>
+</rss>`;
+
+      const result = await parser.parseString(rss2Feed);
+
+      // &#8216; = ', &#8217; = '
+      expect(result.title).toBe("Feed with \u2018curly\u2019 quotes");
+      // &#8212; = —, &#8220; = ", &#8221; = "
+      expect(result.items[0].title).toBe("Article \u2014 with \u201Centities\u201D");
+      // &#169; = ©
+      expect(result.items[0].content).toBe("Content with \u00A9 copyright symbol");
+    });
+
+    it("should decode HTML entities in RSS 2.0 channel title", async () => {
+      const rss2Feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Tech &amp; Science News</title>
+    <link>https://example.com</link>
+    <description>Latest tech &amp; science updates</description>
+    <item>
+      <title>Article</title>
+    </item>
+  </channel>
+</rss>`;
+
+      const result = await parser.parseString(rss2Feed);
+
+      expect(result.title).toBe("Tech & Science News");
+      expect(result.description).toBe("Latest tech & science updates");
+    });
+
+    it("should decode HTML entities in content:encoded", async () => {
+      const rss2Feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Feed</title>
+    <link>https://example.com</link>
+    <item>
+      <title>Article</title>
+      <description>Short description</description>
+      <content:encoded>Full content with &amp;ndash; dash and &amp;hellip; ellipsis</content:encoded>
+    </item>
+  </channel>
+</rss>`;
+
+      const result = await parser.parseString(rss2Feed);
+
+      // &ndash; = –, &hellip; = …
+      expect(result.items[0]["content:encoded"]).toBe("Full content with \u2013 dash and \u2026 ellipsis");
+    });
+
+    it("should decode HTML entities in RSS 1.0 feeds", async () => {
+      const rss1Feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://purl.org/rss/1.0/">
+  <channel>
+    <title>News &amp; Updates</title>
+    <link>https://example.com</link>
+    <description>Latest news &amp; updates</description>
+  </channel>
+  <item rdf:about="https://example.com/article1">
+    <title>Article with &amp;mdash; dash</title>
+    <link>https://example.com/article1</link>
+    <description>Content with &amp;nbsp; spaces</description>
+  </item>
+</rdf:RDF>`;
+
+      const result = await parser.parseString(rss1Feed);
+
+      expect(result.title).toBe("News & Updates");
+      expect(result.description).toBe("Latest news & updates");
+      // &mdash; = —
+      expect(result.items[0].title).toBe("Article with \u2014 dash");
+      // &nbsp; = non-breaking space
+      expect(result.items[0].content).toBe("Content with \u00A0 spaces");
     });
   });
 

@@ -19,14 +19,14 @@ export function getSnippet(str: string | undefined) {
  * Extracts text content from an XML element that may be a string or object.
  * Handles fast-xml-parser format where elements with attributes become objects
  * with #text for content and $ prefixed properties for attributes.
- * Automatically decodes HTML entities when content type is "html".
+ * Automatically decodes HTML entities from all text content.
  *
  * @param value - The value to extract text from (string or object)
  * @returns The extracted text string or the original value
  */
 export function getTextContent(value: any): any {
   if (typeof value === "string") {
-    return value;
+    return decodeHTML(value);
   }
   if (typeof value === "object" && value !== null) {
     let text: string | undefined;
@@ -39,13 +39,9 @@ export function getTextContent(value: any): any {
       text = value._;
     }
 
-    // If we extracted text and type is html, decode HTML entities
-    if (text !== undefined && value.$type === "html") {
-      return decodeHTML(text);
-    }
-
+    // Decode HTML entities from extracted text
     if (text !== undefined) {
-      return text;
+      return decodeHTML(text);
     }
   }
   return value;
