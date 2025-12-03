@@ -12,6 +12,8 @@ import {
 } from "@tanstack/react-query";
 import { ArticleList } from "./ArticleList";
 
+export const dynamic = "force-dynamic";
+
 export default async function ArticlesSlot(props: {
   searchParams: Promise<SearchParams>;
 }) {
