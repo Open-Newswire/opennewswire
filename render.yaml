@@ -3,7 +3,7 @@ services:
     plan: free
     name: opennewswire-web
     runtime: node
-    buildCommand: npm run ci-build
+    buildCommand: npm ci && npm run ci-build
     startCommand: npm run start
     branch: render
     envVars:
