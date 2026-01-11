@@ -7,7 +7,7 @@ services:
     startCommand: npm run start
     branch: render
     envVars:
-      - key: DATABASE_URL
+      - key: POSTGRES_URL
         fromDatabase:
           name: opennewswire-db
           property: connectionString
