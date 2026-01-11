@@ -1,0 +1,25 @@
+services:
+  - type: web
+    plan: free
+    name: opennewswire-web
+    runtime: node
+    branch: render
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: opennewswire-db
+          property: connectionString
+      - key: NEXT_PUBLIC_WEBSITE_URL
+        value: https://opennewswire-web.onrender.com
+      - key: QSTASH_CURRENT_SIGNING_KEY
+        sync: false
+      - key: QSTASH_NEXT_SIGNING_KEY
+        sync: false
+      - key: QSTASH_TOKEN
+        sync: false
+      - key: QSTASH_URL
+        sync: false
+
+databases:
+  - name: opennewswire-db
+    plan: free
