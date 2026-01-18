@@ -1,25 +1,29 @@
-services:
-  - type: web
-    name: opennewswire-web
-    runtime: node
-    buildCommand: npm ci && npm run ci-build
-    startCommand: npm run start
-    branch: render
-    envVars:
-      - key: POSTGRES_URL
-        fromDatabase:
-          name: opennewswire-db
-          property: connectionString
-      - key: NEXT_PUBLIC_WEBSITE_URL
-        value: https://opennewswire-web.onrender.com
-      - key: QSTASH_CURRENT_SIGNING_KEY
-        sync: false
-      - key: QSTASH_NEXT_SIGNING_KEY
-        sync: false
-      - key: QSTASH_TOKEN
-        sync: false
-      - key: QSTASH_URL
-        sync: false
+projects:
+  - name: opennewswire-app
+    environments:
+      - name: production
+        services:
+          - type: web
+            name: opennewswire-web
+            runtime: node
+            buildCommand: npm ci && npm run ci-build
+            startCommand: npm run start
+            branch: render
+            envVars:
+              - key: POSTGRES_URL
+                fromDatabase:
+                  name: opennewswire-db
+                  property: connectionString
+              - key: NEXT_PUBLIC_WEBSITE_URL
+                value: https://opennewswire-web.onrender.com
+              - key: QSTASH_CURRENT_SIGNING_KEY
+                sync: false
+              - key: QSTASH_NEXT_SIGNING_KEY
+                sync: false
+              - key: QSTASH_TOKEN
+                sync: false
+              - key: QSTASH_URL
+                sync: false
 
-databases:
-  - name: opennewswire-db
+        databases:
+          - name: opennewswire-db
