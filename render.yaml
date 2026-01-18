@@ -1,6 +1,5 @@
 services:
   - type: web
-    plan: free
     name: opennewswire-web
     runtime: node
     buildCommand: npm ci && npm run ci-build
@@ -24,4 +23,3 @@ services:
 
 databases:
   - name: opennewswire-db
-    plan: free
