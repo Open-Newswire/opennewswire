@@ -16,6 +16,8 @@ projects:
                   property: connectionString
               - key: NEXT_PUBLIC_WEBSITE_URL
                 value: https://opennewswire-web.onrender.com
+              - key: PLATFORM
+                value: render
               - key: QSTASH_CURRENT_SIGNING_KEY
                 sync: false
               - key: QSTASH_NEXT_SIGNING_KEY
