@@ -81,8 +81,15 @@ function parseBrowserLanguage(acceptLanguage: string | null) {
   return primaryLanguage;
 }
 
+function parseIpAddress(forwardedFor: string | null) {
+  if (!forwardedFor) {
+    return null;
+  }
+  return forwardedFor.split(",")[0].trim();
+}
+
 export async function recordQuery(sessionId: string, request: NextRequest) {
-  const ip = request.headers.get("x-forwarded-for");
+  const ip = parseIpAddress(request.headers.get("x-forwarded-for"));
   const browserLanguage = parseBrowserLanguage(
     request.headers.get("accept-language"),
   );
@@ -109,7 +116,7 @@ export async function recordArticleInteraction(
   request: NextRequest,
   searchParams: URLSearchParams,
 ) {
-  const ip = request.headers.get("x-forwarded-for");
+  const ip = parseIpAddress(request.headers.get("x-forwarded-for"));
   const browserLanguage = parseBrowserLanguage(
     request.headers.get("accept-language"),
   );
