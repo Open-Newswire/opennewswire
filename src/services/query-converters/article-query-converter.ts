@@ -93,7 +93,7 @@ const BASE_QUERY = prisma.$kysely
     "la.name as languageName",
     "la.isRtl as languageIsRtl",
   ])
-  .where("a.date", "<=", new Date());
+  .where(sql`a.date`, "<=", sql`NOW()`);
 
 export function buildArticleQueryStatement(query: ArticleQuery) {
   let baseQuery = BASE_QUERY;
