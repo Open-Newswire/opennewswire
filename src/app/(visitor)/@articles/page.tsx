@@ -30,7 +30,6 @@ export default async function ArticlesSlot(props: {
       const [articles, { isLastPage }] = await fetchArticlesForFeedReader({
         ...query,
         page,
-        size: 20,
       });
 
       return { articles, isLastPage };
@@ -40,7 +39,7 @@ export default async function ArticlesSlot(props: {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ArticleList searchParams={searchParams} />
+      <ArticleList />
     </HydrationBoundary>
   );
 }
