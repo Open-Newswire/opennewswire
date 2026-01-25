@@ -1,33 +1,48 @@
 "use client";
 
-import { fetchArticlesForFeedReader } from "@/actions/articles";
 import {
   ArticleFeedReaderQuery,
   ArticleFeedReaderQuerySchema,
 } from "@/schemas/articles";
-import { SearchParams } from "@/types/shared";
+import { ArticleWithMetadata } from "@/types/article";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 import { Center, Loader } from "@mantine/core";
 import { useIntersection } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { PageNumberPagination } from "prisma-extension-pagination/dist/types";
 import React, { Fragment, useEffect } from "react";
 import { Article } from "./Article";
 
-export function ArticleList({ searchParams }: { searchParams: SearchParams }) {
+async function fetchArticles(query: ArticleFeedReaderQuery) {
+  const params = new URLSearchParams(query as any);
+  const res = await fetch(`/api/articles?${params.toString()}`);
+  if (!res.ok) {
+    throw new Error("Failed to load articles");
+  }
+
+  return (await res.json()) as {
+    results: ArticleWithMetadata[];
+    pagination: PageNumberPagination;
+  };
+}
+
+export function ArticleList() {
+  const searchParams = useSearchParams();
+  const paramsAsObject = Object.fromEntries(searchParams.entries());
   const query = parseSchemaWithDefaults(
     ArticleFeedReaderQuerySchema,
-    searchParams,
+    paramsAsObject,
   ) as ArticleFeedReaderQuery;
   const { data, fetchNextPage, isFetching, hasNextPage } = useInfiniteQuery({
     queryKey: ["articles", query],
     queryFn: async ({ pageParam: page }) => {
-      const [articles, { isLastPage }] = await fetchArticlesForFeedReader({
+      const { results, pagination } = await fetchArticles({
         ...query,
         page,
-        size: 20,
       });
 
-      return { articles, isLastPage };
+      return { articles: results, isLastPage: pagination.isLastPage };
     },
     initialPageParam: 1,
     getNextPageParam: ({ isLastPage }, __, lastPageParam) =>
