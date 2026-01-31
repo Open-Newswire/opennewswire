@@ -33,8 +33,6 @@ export function BlobUploader(
 
     setProgress(null);
     props.onAssetIconUrlChange(newBlob.url);
-
-    console.log(newBlob);
   }
 
   return (

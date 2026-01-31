@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     return new Response(`Job "${jobId}" processed successfully.`);
   } catch (err) {
-    console.error("Error prossing job" + jobId);
+    console.error("Error prossing job id", jobId);
     console.error(err);
     return new Response(`Job "${jobId}" failed to process.`, {
       status: 500,

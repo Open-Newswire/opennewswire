@@ -44,8 +44,6 @@ async function handler() {
       if (event.ipAddress) {
         locationResult = await resolveIpToLocation(event.ipAddress);
 
-        console.log(locationResult);
-
         if (locationResult.tryLater) {
           await scheduleReprocess();
           console.log("IP address rate limit reached, scheduled followup");

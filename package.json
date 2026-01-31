@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "prisma generate && npx prisma migrate deploy && next build",
+    "ci-build": "prisma generate && npx prisma migrate deploy && next build",
     "test": "vitest",
     "format:check": "prettier ./src",
     "format:write": "prettier ./src --write",

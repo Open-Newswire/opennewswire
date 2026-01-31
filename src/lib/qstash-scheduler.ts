@@ -20,7 +20,7 @@ export class QStashScheduler implements Scheduler {
         "Content-Type": "application/json",
       },
       retries: 0,
-      body,
+      body: body ? JSON.stringify(body) : undefined,
     });
   }
 
