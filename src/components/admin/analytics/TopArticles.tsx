@@ -26,6 +26,7 @@ export async function TopArticles(props: LoadingResult<TopArticleCount[]>) {
           <Skeleton className="w-full h-75" />
         ) : (
           <TopArticlesTable
+            showFilterBar={false}
             data={{
               results: props.result,
               pagination: { pageCount: 1, totalCount: props.result.length },

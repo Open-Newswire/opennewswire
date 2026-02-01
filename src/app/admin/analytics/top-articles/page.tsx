@@ -7,7 +7,7 @@ import { getTopArticlesPaginated } from "@/domains/analytics/service";
 import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
-export default async function TopSearches(props: {
+export default async function TopArticles(props: {
   searchParams: Promise<SearchParams>;
 }) {
   const query = await loadAnalyticsQueryParams(props.searchParams);

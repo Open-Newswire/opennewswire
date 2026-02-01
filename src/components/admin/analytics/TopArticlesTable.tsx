@@ -4,15 +4,17 @@ import { AnalyticsFilterBar } from "@/components/admin/analytics/AnalyticsFilter
 import { columns } from "@/components/admin/analytics/TopArticlesColumns";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { usePaginatedQuery } from "@/hooks/use-paginated-query";
 import { TopArticleCount } from "@/domains/analytics";
 import { PaginatedData } from "@/domains/shared/types";
+import { usePaginatedQuery } from "@/hooks/use-paginated-query";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 export function TopArticlesTable({
   data,
+  showFilterBar = true,
 }: {
   data: PaginatedData<TopArticleCount>;
+  showFilterBar?: boolean;
 }) {
   const [{ page, size }, setPagination] = usePaginatedQuery();
   const table = useReactTable({
@@ -43,7 +45,7 @@ export function TopArticlesTable({
 
   return (
     <>
-      <AnalyticsFilterBar />
+      {showFilterBar ? <AnalyticsFilterBar /> : null}
       <DataTable table={table} />
       <DataTablePagination table={table} />
     </>
