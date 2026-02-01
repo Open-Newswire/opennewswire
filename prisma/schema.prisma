@@ -65,6 +65,8 @@ model Feed {
 
   @@index([title])
   @@index([url])
+  @@index([languageId])
+  @@index([licenseId])
 }
 
 model Article {
