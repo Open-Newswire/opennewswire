@@ -1,5 +1,5 @@
-import { DataRetentionSection } from "@/app/admin/settings/(general)/DataRetentionSection";
-import { SyncFrequencySection } from "@/app/admin/settings/(general)/SyncFrequencySection";
+import { DataRetentionSection } from "@/components/admin/settings/DataRetentionSection";
+import { SyncFrequencySection } from "@/components/admin/settings/SyncFrequencySection";
 import { TabsContent } from "@/components/ui/tabs";
 
 export default async function GeneralSettings() {

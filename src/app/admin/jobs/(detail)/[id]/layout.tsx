@@ -1,4 +1,4 @@
-import { fetchJob } from "@/actions/jobs";
+import { fetchJob } from "@/domains/jobs/actions";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";

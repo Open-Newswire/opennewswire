@@ -1,7 +1,7 @@
-import { fetchArticles } from "@/actions/articles";
-import { ArticlesTable } from "@/components/articles/ArticlesTable";
-import { ArticleQuery, ArticleQuerySchema } from "@/schemas/articles";
-import { SearchParams } from "@/types/shared";
+import { fetchArticles } from "@/domains/articles/actions";
+import { ArticlesTable } from "@/components/admin/articles/ArticlesTable";
+import { ArticleQuery, ArticleQuerySchema } from "@/domains/articles/schemas";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function Articles(props: {

@@ -1,7 +1,7 @@
-import { ReorderLanguagesActionButton } from "@/app/admin/languages/ReorderLanguagesActionButton";
+import { ReorderLanguagesActionButton } from "@/components/admin/languages/ReorderLanguagesActionButton";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { ReactNode } from "react";
-import { AddLanguageActionButton } from "./AddLanguageActionButton";
+import { AddLanguageActionButton } from "@/components/admin/languages/AddLanguageActionButton";
 
 export default function LanguagesLayout({ children }: { children: ReactNode }) {
   return (

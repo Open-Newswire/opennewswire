@@ -1,10 +1,10 @@
-import { TopSearchesTable } from "@/app/admin/analytics/top-searches/TopSearchesTable";
+import { TopSearchesTable } from "@/components/admin/analytics/TopSearchesTable";
 import {
   PaginatedAnalyticsQuerySchema,
   loadAnalyticsQueryParams,
-} from "@/schemas/analytics";
-import { getTopSearchesPaginated } from "@/services/analytics";
-import { SearchParams } from "@/types/shared";
+} from "@/domains/analytics";
+import { getTopSearchesPaginated } from "@/domains/analytics/service";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function TopSearches(props: {

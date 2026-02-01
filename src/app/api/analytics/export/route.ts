@@ -1,13 +1,13 @@
 import {
   AnalyticsQuery,
   AnalyticsReportQuerySchema,
-} from "@/schemas/analytics";
+} from "@/domains/analytics/schemas";
 import {
   getCountDistinctCountriesForReport,
   getEventsForReport,
   getTopArticlesForReport,
   getTopSearchesForReport,
-} from "@/services/analytics";
+} from "@/domains/analytics/service";
 import { format } from "date-fns";
 import { NextRequest } from "next/server";
 

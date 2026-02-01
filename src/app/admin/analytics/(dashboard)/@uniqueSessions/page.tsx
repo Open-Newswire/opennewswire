@@ -1,10 +1,10 @@
-import { UniqueSessions } from "@/app/admin/analytics/(dashboard)/@uniqueSessions/UniqueSessions";
+import { UniqueSessions } from "@/components/admin/analytics/UniqueSessions";
 import {
   PaginatedAnalyticsQuerySchema,
   loadAnalyticsQueryParams,
-} from "@/schemas/analytics";
-import { getUniqueSessions } from "@/services/analytics";
-import { SearchParams } from "@/types/shared";
+} from "@/domains/analytics";
+import { getUniqueSessions } from "@/domains/analytics/service";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function uniqueSessionsSlot(props: {

@@ -1,9 +1,9 @@
-import { fetchFeedById } from "@/actions/feeds";
-import { fetchJobsByFeed } from "@/actions/jobs";
-import { JobsTable } from "@/components/jobs/JobsTable";
+import { fetchFeedById } from "@/domains/feeds/actions";
+import { fetchJobsByFeed } from "@/domains/jobs/actions";
+import { JobsTable } from "@/components/admin/jobs/JobsTable";
 import { TabsContent } from "@/components/ui/tabs";
-import { SyncJobQuery, SyncJobQuerySchema } from "@/schemas/sync-jobs";
-import { SearchParams } from "@/types/shared";
+import { SyncJobQuery, SyncJobQuerySchema } from "@/domains/jobs/schemas";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function FeedSyncHistory(props: {

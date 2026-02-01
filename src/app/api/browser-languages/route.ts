@@ -1,4 +1,4 @@
-import { getDistinctBrowserLanguages } from "@/services/analytics";
+import { getDistinctBrowserLanguages } from "@/domains/analytics/service";
 
 export async function GET() {
   const browserLanguages = await getDistinctBrowserLanguages();

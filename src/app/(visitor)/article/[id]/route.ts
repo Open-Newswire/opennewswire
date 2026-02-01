@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
-import { recordArticleInteraction } from "@/services/analytics";
-import { ANALYTICS_COOKIE_NAME } from "@/types/analytics";
+import { recordArticleInteraction } from "@/domains/analytics/service";
+import { ANALYTICS_COOKIE_NAME } from "@/domains/analytics/types";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";

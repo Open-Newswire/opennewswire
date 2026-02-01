@@ -1,4 +1,4 @@
-import { getDiagnosticsReport } from "@/actions/app-preferences";
+import { getDiagnosticsReport } from "@/domains/app-preferences/actions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Item,
@@ -9,9 +9,9 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { TabsContent } from "@/components/ui/tabs";
-import { ScheduledDiagnosticStatus } from "@/services/app-preferences";
+import { ScheduledDiagnosticStatus } from "@/domains/app-preferences/service";
 import { CircleAlert, CircleCheck, CircleX, Info } from "lucide-react";
-import { DiagnosticFixButton } from "./DiagnosticFixButton";
+import { DiagnosticFixButton } from "@/components/admin/settings/DiagnosticFixButton";
 
 function getStatusIcon(status?: ScheduledDiagnosticStatus) {
   switch (status) {

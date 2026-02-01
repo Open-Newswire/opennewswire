@@ -1,10 +1,10 @@
-import { TotalEvents } from "@/app/admin/analytics/(dashboard)/@totalEvents/TotalEvents";
+import { TotalEvents } from "@/components/admin/analytics/TotalEvents";
 import {
   PaginatedAnalyticsQuerySchema,
   loadAnalyticsQueryParams,
-} from "@/schemas/analytics";
-import { getTotalEvents } from "@/services/analytics";
-import { SearchParams } from "@/types/shared";
+} from "@/domains/analytics";
+import { getTotalEvents } from "@/domains/analytics/service";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function totalEventsSlot(props: {

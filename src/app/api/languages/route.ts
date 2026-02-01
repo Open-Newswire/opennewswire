@@ -1,4 +1,4 @@
-import { fetchLanguages } from "@/actions/languages";
+import { fetchLanguages } from "@/domains/languages/actions";
 
 export const dynamic = "force-dynamic";
 

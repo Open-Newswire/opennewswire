@@ -1,10 +1,10 @@
-import { TopArticles } from "@/app/admin/analytics/(dashboard)/@topArticles/TopArticles";
+import { TopArticles } from "@/components/admin/analytics/TopArticles";
 import {
   PaginatedAnalyticsQuerySchema,
   loadAnalyticsQueryParams,
-} from "@/schemas/analytics";
-import { getTopArticles } from "@/services/analytics";
-import { SearchParams } from "@/types/shared";
+} from "@/domains/analytics";
+import { getTopArticles } from "@/domains/analytics/service";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function topSearchesSlot(props: {

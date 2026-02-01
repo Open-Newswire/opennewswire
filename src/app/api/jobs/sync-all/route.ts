@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { dispatchChildSync } from "@/services/sync/dispatcher/dispatcher";
+import { dispatchChildSync } from "@/domains/sync/dispatcher/dispatcher";
 import { Status, Trigger } from "@prisma/client";
 import { z } from "zod";
 

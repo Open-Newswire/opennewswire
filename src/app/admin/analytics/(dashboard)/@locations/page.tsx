@@ -1,10 +1,10 @@
-import { Map } from "@/app/admin/analytics/(dashboard)/@locations/Map";
+import { Map } from "@/components/admin/analytics/Map";
 import {
   PaginatedAnalyticsQuerySchema,
   loadAnalyticsQueryParams,
-} from "@/schemas/analytics";
-import { getCountDistinctCountries } from "@/services/analytics";
-import { SearchParams } from "@/types/shared";
+} from "@/domains/analytics";
+import { getCountDistinctCountries } from "@/domains/analytics/service";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function topSearchesSlot(props: {

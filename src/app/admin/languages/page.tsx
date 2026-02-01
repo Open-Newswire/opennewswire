@@ -1,8 +1,8 @@
-import { queryLanguages } from "@/actions/languages";
-import { LanguageQuery, LanguageQuerySchema } from "@/schemas/languages";
-import { SearchParams } from "@/types/shared";
+import { queryLanguages } from "@/domains/languages/actions";
+import { LanguageQuery, LanguageQuerySchema } from "@/domains/languages/schemas";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
-import { LanguagesTable } from "./LanguagesTable";
+import { LanguagesTable } from "@/components/admin/languages/LanguagesTable";
 
 export default async function Languages(props: {
   searchParams: Promise<SearchParams>;

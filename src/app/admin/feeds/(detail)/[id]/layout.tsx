@@ -1,10 +1,10 @@
-import { fetchFeedById } from "@/actions/feeds";
+import { fetchFeedById } from "@/domains/feeds/actions";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { redirect } from "next/navigation";
 import React from "react";
-import { FeedActionButton } from "./FeedActionButton";
-import { FeedDetailTabs } from "./FeedDetailTabs";
-import { FeedsActionMenu } from "./FeedsActionMenu";
+import { FeedActionButton } from "@/components/admin/feeds/FeedActionButton";
+import { FeedDetailTabs } from "@/components/admin/feeds/FeedDetailTabs";
+import { FeedsActionMenu } from "@/components/admin/feeds/FeedsActionMenu";
 
 export default async function FeedDetailsLayout(props: {
   params: Promise<{ id: string }>;

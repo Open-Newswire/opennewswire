@@ -1,7 +1,7 @@
-import { fetchFeeds } from "@/actions/feeds";
-import { FeedsTable } from "@/components/feeds/FeedsTable";
-import { FeedQuery, FeedQuerySchema } from "@/schemas/feeds";
-import { SearchParams } from "@/types/shared";
+import { fetchFeeds } from "@/domains/feeds/actions";
+import { FeedsTable } from "@/components/admin/feeds/FeedsTable";
+import { FeedQuery, FeedQuerySchema } from "@/domains/feeds/schemas";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export const dynamic = "force-dynamic";

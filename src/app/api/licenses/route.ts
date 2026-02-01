@@ -1,4 +1,4 @@
-import { fetchLicenses } from "@/actions/licenses";
+import { fetchLicenses } from "@/domains/licenses/actions";
 
 export const dynamic = "force-dynamic";
 
