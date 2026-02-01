@@ -1,6 +1,6 @@
 "use client";
 
-import { EventsTable } from "@/app/admin/analytics/events/EventsTable";
+import { EventsTable } from "@/components/admin/analytics/EventsTable";
 
 export default function Loading() {
   return (

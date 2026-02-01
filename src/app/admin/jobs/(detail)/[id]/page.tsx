@@ -1,7 +1,7 @@
-import { fetchJob } from "@/actions/jobs";
-import { ChildJobDetails } from "@/app/admin/jobs/(detail)/[id]/ChildJobDetails";
-import { ParentJobDetails } from "@/app/admin/jobs/(detail)/[id]/ParentJobDetails";
-import { SearchParams } from "@/types/shared";
+import { fetchJob } from "@/domains/jobs/actions";
+import { ChildJobDetails } from "@/components/admin/jobs/ChildJobDetails";
+import { ParentJobDetails } from "@/components/admin/jobs/ParentJobDetails";
+import { SearchParams } from "@/domains/shared/types";
 
 export default async function SyncJobDetails(props: {
   params: Promise<{ id: string }>;

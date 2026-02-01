@@ -1,8 +1,8 @@
-import { fetchJobs } from "@/actions/jobs";
-import { SyncJobQuery, SyncJobQuerySchema } from "@/schemas/sync-jobs";
-import { SearchParams } from "@/types/shared";
+import { fetchJobs } from "@/domains/jobs/actions";
+import { SyncJobQuery, SyncJobQuerySchema } from "@/domains/jobs/schemas";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
-import { JobsTable } from "../../../../components/jobs/JobsTable";
+import { JobsTable } from "@/components/admin/jobs/JobsTable";
 
 export default async function Jobs(props: {
   searchParams: Promise<SearchParams>;

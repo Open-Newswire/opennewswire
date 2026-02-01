@@ -1,5 +1,5 @@
-import { QueryProvider } from "@/app/(visitor)/QueryProvider";
-import { Shell } from "@/app/(visitor)/Shell";
+import { QueryProvider } from "@/components/visitor/QueryProvider";
+import { Shell } from "@/components/visitor/Shell";
 import { Metadata } from "next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ReactNode } from "react";

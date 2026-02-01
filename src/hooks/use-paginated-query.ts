@@ -1,6 +1,6 @@
 "use client";
 
-import { PaginatedQueryParsers } from "@/schemas/shared";
+import { PaginatedQueryParsers } from "@/domains/shared/schemas";
 import { useQueryStates } from "nuqs";
 
 export function usePaginatedQuery() {

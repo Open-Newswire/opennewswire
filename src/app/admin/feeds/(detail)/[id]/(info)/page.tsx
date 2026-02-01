@@ -1,6 +1,6 @@
-import { fetchFeedById } from "@/actions/feeds";
+import { fetchFeedById } from "@/domains/feeds/actions";
 import { TabsContent } from "@/components/ui/tabs";
-import { FeedMetadata } from "./FeedMetadata";
+import { FeedMetadata } from "@/components/admin/feeds/FeedMetadata";
 
 export default async function FeedStories(props: {
   params: Promise<{ id: string }>;

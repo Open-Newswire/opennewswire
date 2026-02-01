@@ -1,4 +1,4 @@
-import { getDistinctCountryCodes } from "@/services/analytics";
+import { getDistinctCountryCodes } from "@/domains/analytics/service";
 
 export async function GET() {
   const countryCodes = await getDistinctCountryCodes();

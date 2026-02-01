@@ -1,10 +1,10 @@
-import { EventsTable } from "@/app/admin/analytics/events/EventsTable";
+import { EventsTable } from "@/components/admin/analytics/EventsTable";
 import {
   PaginatedAnalyticsQuerySchema,
   loadAnalyticsQueryParams,
-} from "@/schemas/analytics";
-import { getEvents } from "@/services/analytics";
-import { SearchParams } from "@/types/shared";
+} from "@/domains/analytics";
+import { getEvents } from "@/domains/analytics/service";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function Events(props: {

@@ -1,4 +1,4 @@
-import { SortDirection } from "@/types/query";
+import { SortDirection } from "@/domains/shared/types";
 import {
   ActionIcon,
   Center,

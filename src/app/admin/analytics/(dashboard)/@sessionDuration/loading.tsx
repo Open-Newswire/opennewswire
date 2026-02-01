@@ -1,4 +1,4 @@
-import { SessionDuration } from "@/app/admin/analytics/(dashboard)/@sessionDuration/SessionDuration";
+import { SessionDuration } from "@/components/admin/analytics/SessionDuration";
 
 export default function SessionDurationLoading() {
   return <SessionDuration isLoading={true} />;

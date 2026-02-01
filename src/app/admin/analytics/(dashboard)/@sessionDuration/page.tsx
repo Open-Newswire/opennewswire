@@ -1,10 +1,10 @@
-import { SessionDuration } from "@/app/admin/analytics/(dashboard)/@sessionDuration/SessionDuration";
+import { SessionDuration } from "@/components/admin/analytics/SessionDuration";
 import {
   PaginatedAnalyticsQuerySchema,
   loadAnalyticsQueryParams,
-} from "@/schemas/analytics";
-import { getAverageSessionDuration } from "@/services/analytics";
-import { SearchParams } from "@/types/shared";
+} from "@/domains/analytics";
+import { getAverageSessionDuration } from "@/domains/analytics/service";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 
 export default async function topSearchesSlot(props: {

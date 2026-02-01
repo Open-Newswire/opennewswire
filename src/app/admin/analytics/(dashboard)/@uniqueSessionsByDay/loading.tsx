@@ -1,4 +1,4 @@
-import { UniqueSessionsByDayChart } from "@/app/admin/analytics/(dashboard)/@uniqueSessionsByDay/UniqueSessionsByDay";
+import { UniqueSessionsByDayChart } from "@/components/admin/analytics/UniqueSessionsByDay";
 
 export default function TopArticlesLoading() {
   return <UniqueSessionsByDayChart isLoading={true} />;

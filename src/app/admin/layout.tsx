@@ -2,10 +2,10 @@ import "@mantine/charts/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 
-import { MainNavigation } from "@/components/admin/navigation/MainNavigation";
-import { modalProps, modals } from "@/components/modals/modal-types";
+import { MainNavigation } from "@/components/admin/layout/MainNavigation";
+import { modalProps, modals } from "@/components/shared/modal-types";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { validateRequest } from "@/services/auth";
+import { validateRequest } from "@/domains/auth/service";
 import { ModalsProvider } from "@mantine/modals";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { enqueueAllSync } from "@/triggers/feeds";
+import { enqueueAllSync } from "@/domains/feeds/triggers";
 
 export function SyncAllActionButton({
   variant = "secondary",

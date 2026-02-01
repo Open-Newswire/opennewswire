@@ -1,8 +1,8 @@
-import { fetchArticlesForFeedReader } from "@/actions/articles";
+import { fetchArticlesForFeedReader } from "@/domains/articles/actions";
 import {
   ArticleFeedReaderQuery,
   ArticleFeedReaderQuerySchema,
-} from "@/schemas/articles";
+} from "@/domains/articles/schemas";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 import { NextRequest, NextResponse } from "next/server";
 

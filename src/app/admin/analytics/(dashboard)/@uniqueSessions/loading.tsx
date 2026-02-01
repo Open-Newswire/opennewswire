@@ -1,4 +1,4 @@
-import { UniqueSessions } from "@/app/admin/analytics/(dashboard)/@uniqueSessions/UniqueSessions";
+import { UniqueSessions } from "@/components/admin/analytics/UniqueSessions";
 
 export default function TopArticlesLoading() {
   return <UniqueSessions isLoading={true} />;
