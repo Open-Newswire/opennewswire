@@ -6,8 +6,8 @@
 // import { TotalEvents } from "@/app/admin/analytics/@totalEvents/TotalEvents";
 // import { UniqueSessions } from "@/app/admin/analytics/@uniqueSessions/UniqueSessions";
 // import { PageHeader } from "@/components/PageHeader";
-import { loadAnalyticsQueryParams } from "@/schemas/analytics";
-import { SearchParams } from "@/types/shared";
+import { loadAnalyticsQueryParams } from "@/domains/analytics";
+import { SearchParams } from "@/domains/shared/types";
 // import { Suspense } from "react";
 
 export default async function Feeds(props: {

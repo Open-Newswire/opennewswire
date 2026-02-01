@@ -1,5 +1,5 @@
-import { ExportAnalyticsReportActionButton } from "@/app/admin/analytics/(dashboard)/ExportAnalyticsReportActionButton";
-import { AnalyticsFilterBar } from "@/app/admin/analytics/(shared)/AnalyticsFilterBar";
+import { ExportAnalyticsReportActionButton } from "@/components/admin/analytics/ExportAnalyticsReportActionButton";
+import { AnalyticsFilterBar } from "@/components/admin/analytics/AnalyticsFilterBar";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { ReactNode } from "react";
 

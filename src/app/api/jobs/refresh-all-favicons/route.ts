@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import * as FeedService from "@/services/feeds";
+import * as FeedService from "@/domains/feeds/service";
 
 export const maxDuration = 300;
 

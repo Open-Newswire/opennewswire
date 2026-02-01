@@ -5,7 +5,7 @@ import {
 } from "@oslojs/encoding";
 import prisma from "./prisma";
 
-import type { UserWithoutPassword } from "@/types/users";
+import type { UserWithoutPassword } from "@/domains/users/types";
 import type { Session } from "@prisma/client";
 
 export function generateSessionToken(): string {

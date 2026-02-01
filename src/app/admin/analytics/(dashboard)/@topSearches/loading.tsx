@@ -1,4 +1,4 @@
-import { TopSearches } from "@/app/admin/analytics/(dashboard)/@topSearches/TopSearches";
+import { TopSearches } from "@/components/admin/analytics/TopSearches";
 
 export default function TopSearchesLoading() {
   return <TopSearches isLoading={true} />;

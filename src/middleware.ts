@@ -1,5 +1,5 @@
-import { recordQuery } from "@/services/analytics";
-import { ANALYTICS_COOKIE_NAME } from "@/types/analytics";
+import { recordQuery } from "@/domains/analytics/service";
+import { ANALYTICS_COOKIE_NAME } from "@/domains/analytics/types";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

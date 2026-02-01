@@ -8,13 +8,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TabsContent } from "@/components/ui/tabs";
-import { validateRequest } from "@/services/auth";
-import { fetchUsers } from "@/services/users";
+import { validateRequest } from "@/domains/auth/service";
+import { fetchUsers } from "@/domains/users/service";
 import { Zap } from "lucide-react";
 import { redirect } from "next/navigation";
-import { ChangePasswordButton } from "./ChangePasswordButton";
-import { UsersActionButton } from "./UsersActionButton";
-import { UsersActionMenu } from "./UsersActionMenu";
+import { ChangePasswordButton } from "@/components/admin/users/ChangePasswordButton";
+import { UsersActionButton } from "@/components/admin/users/UsersActionButton";
+import { UsersActionMenu } from "@/components/admin/users/UsersActionMenu";
 
 export default async function UsersSettings() {
   const { user } = await validateRequest();

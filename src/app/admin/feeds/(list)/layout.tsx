@@ -1,4 +1,4 @@
-import { AddFeedActionButton } from "@/app/admin/feeds/(list)/AddFeedActionButton";
+import { AddFeedActionButton } from "@/components/admin/feeds/AddFeedActionButton";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { SyncAllActionButton } from "@/components/SyncAllActionButton";
 import { ReactNode } from "react";

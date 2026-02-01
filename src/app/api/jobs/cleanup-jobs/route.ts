@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
-import { SyncJobHistoryRetentionPreference } from "@/schemas/app-preferences";
-import { getPreference } from "@/services/app-preferences";
+import { SyncJobHistoryRetentionPreference } from "@/domains/app-preferences/schemas";
+import { getPreference } from "@/domains/app-preferences/service";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
 import { sub } from "date-fns";
 import { StatusCodes } from "http-status-codes";

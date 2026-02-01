@@ -2,7 +2,7 @@ import {
   JobsTableHeader,
   JobsTableLoadingFilters,
   JobsTableLoadingRow,
-} from "../../../../components/jobs/JobsTable";
+} from "@/components/admin/jobs/JobsTable";
 
 export default function Loading() {
   return (

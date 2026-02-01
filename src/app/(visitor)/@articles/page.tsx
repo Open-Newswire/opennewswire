@@ -1,16 +1,16 @@
-import { fetchArticlesForFeedReader } from "@/actions/articles";
+import { fetchArticlesForFeedReader } from "@/domains/articles/actions";
 import {
   ArticleFeedReaderQuery,
   ArticleFeedReaderQuerySchema,
-} from "@/schemas/articles";
-import { SearchParams } from "@/types/shared";
+} from "@/domains/articles/schemas";
+import { SearchParams } from "@/domains/shared/types";
 import { parseSchemaWithDefaults } from "@/utils/parse-schema-with-defaults";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { ArticleList } from "./ArticleList";
+import { ArticleList } from "@/components/visitor/ArticleList";
 
 export const dynamic = "force-dynamic";
 
