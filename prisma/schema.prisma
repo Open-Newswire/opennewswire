@@ -159,6 +159,7 @@ model AnalyticsEvent {
 
   @@index([occuredAt], type: Brin)
   @@index([sessionId])
+  @@index([browserLanguage])
 }
 
 model IpAddressCache {
