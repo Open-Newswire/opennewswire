@@ -19,7 +19,7 @@ export function DataTable<TData>({
 }) {
   return (
     <div className="rounded-md border">
-      <TableWrapper>
+      <TableWrapper className="table-fixed">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

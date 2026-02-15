@@ -1,3 +1,13 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   activateFeed,
   deactivateFeed,
@@ -7,15 +17,7 @@ import {
   refreshLogo,
 } from "@/domains/feeds/triggers";
 import { FeedsWithLicenseAndLanguage } from "@/domains/feeds/types";
-import {
-  ActionIcon,
-  Menu,
-  MenuDivider,
-  MenuDropdown,
-  MenuItem,
-  MenuTarget,
-} from "@mantine/core";
-import { IconDots } from "@tabler/icons-react";
+import { MoreHorizontal } from "lucide-react";
 
 export function FeedTableActionMenu({
   feed,
@@ -47,26 +49,31 @@ export function FeedTableActionMenu({
   }
 
   return (
-    <Menu>
-      <MenuTarget>
-        <ActionIcon variant="subtle">
-          <IconDots size="1rem" />
-        </ActionIcon>
-      </MenuTarget>
-      <MenuDropdown>
-        <MenuItem onClick={handleSync}>Sync Articles</MenuItem>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="size-8">
+          <MoreHorizontal className="size-4" />
+          <span className="sr-only">Open menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={handleSync}>Sync Articles</DropdownMenuItem>
         {feed.isActive ? (
-          <MenuItem onClick={handleDeactivate}>Deactivate</MenuItem>
+          <DropdownMenuItem onClick={handleDeactivate}>
+            Deactivate
+          </DropdownMenuItem>
         ) : (
-          <MenuItem onClick={handleActivate}>Activate</MenuItem>
+          <DropdownMenuItem onClick={handleActivate}>Activate</DropdownMenuItem>
         )}
-        <MenuItem onClick={handleEdit}>Edit</MenuItem>
-        <MenuItem onClick={handleLogoRefresh}>Refresh Logo</MenuItem>
-        <MenuDivider />
-        <MenuItem color="red" onClick={handleDelete}>
+        <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogoRefresh}>
+          Refresh Logo
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem variant="destructive" onClick={handleDelete}>
           Delete
-        </MenuItem>
-      </MenuDropdown>
-    </Menu>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

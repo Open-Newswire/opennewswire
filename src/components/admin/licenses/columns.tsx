@@ -15,6 +15,7 @@ export const columns: ColumnDef<License>[] = [
     },
     meta: {
       displayName: "Name",
+      headClassName: "w-[30%]",
     },
   },
   {
@@ -22,6 +23,7 @@ export const columns: ColumnDef<License>[] = [
     header: "Slug",
     meta: {
       displayName: "Slug",
+      headClassName: "w-[30%]",
     },
   },
   {
@@ -37,6 +39,7 @@ export const columns: ColumnDef<License>[] = [
     },
     meta: {
       displayName: "Preview",
+      headClassName: "w-[35%]",
     },
   },
   {
