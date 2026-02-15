@@ -6,6 +6,7 @@
     "dev": "next dev --turbopack",
     "dev-jobs": "ts-node ./scripts/dev-job-listener",
     "debug-feed": "ts-node ./scripts/debug-feed.ts",
+    "sync-prod-data": "ts-node sync-prod-data.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
