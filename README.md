@@ -65,6 +65,16 @@ Then, apply the seeds:
 npx prisma db seed
 ```
 
+### Syncing Production Data Locally
+
+To populate your local database with production languages, licenses, and feeds:
+
+```bash
+PROD_POSTGRES_URL="postgresql://user:pass@host:5432/db" npm run sync-prod-data
+```
+
+This upserts all records so it's safe to run repeatedly.
+
 ### Creating Migrations
 
 To create a new database migration, run `npx prisma migrate dev --name <name>`, where `<name>` is a unique name identifying the contents of the migration.

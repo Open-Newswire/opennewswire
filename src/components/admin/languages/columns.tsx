@@ -17,6 +17,7 @@ export const columns: ColumnDef<Language>[] = [
     },
     meta: {
       displayName: "Name",
+      headClassName: "w-[35%]",
     },
   },
   {
@@ -26,6 +27,7 @@ export const columns: ColumnDef<Language>[] = [
     ),
     meta: {
       displayName: "Slug",
+      headClassName: "w-[30%]",
     },
   },
   {
@@ -43,6 +45,7 @@ export const columns: ColumnDef<Language>[] = [
     },
     meta: {
       displayName: "RTL",
+      headClassName: "w-[15%]",
     },
   },
   {
@@ -57,6 +60,7 @@ export const columns: ColumnDef<Language>[] = [
     },
     meta: {
       displayName: "Order",
+      headClassName: "w-[15%]",
     },
   },
   {

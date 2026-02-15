@@ -1,25 +1,16 @@
 "use client";
 
-import {
-  LanguageFeedFilter,
-  LicenseFeedFilter,
-  StatusFeedFilter,
-} from "@/components/admin/feeds/FeedsFilters";
-import { FeedsTableRow } from "@/components/admin/feeds/FeedsTableRow";
-import { FilterBar } from "@/components/shared/FilterBar";
-import { PaginationBar } from "@/components/shared/PaginationBar";
-import { SearchTextInput } from "@/components/shared/SearchTextInput";
-import {
-  TableThAction,
-  TableThSortGroup,
-  TableThSortNew,
-} from "@/components/Table";
+import { columns } from "@/components/admin/feeds/columns";
+import { FeedsFilterBar } from "@/components/admin/feeds/FeedsFilterBar";
+import { DataTable } from "@/components/ui/data-table";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { DataTableViewOptions } from "@/components/ui/data-table-view-options";
 import { FeedsWithLicenseAndLanguage } from "@/domains/feeds/types";
-import { SortDirection } from "@/domains/shared/types";
-import { PaginationMeta } from "@/domains/shared/types";
+import { PaginationMeta, SortDirection } from "@/domains/shared/types";
+import { usePaginatedQuery } from "@/hooks/use-paginated-query";
 import { useSortQueryState } from "@/utils/use-sort-query-state";
-import { Table, TableTbody, TableThead, TableTr } from "@mantine/core";
-import { parseAsInteger, useQueryState } from "nuqs";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { useLocalStorage } from "usehooks-ts";
 
 export function FeedsTable({
   feeds,
@@ -28,77 +19,65 @@ export function FeedsTable({
   feeds: FeedsWithLicenseAndLanguage[];
   pagination: PaginationMeta;
 }) {
-  const [search, setSearch] = useQueryState("search", {
-    defaultValue: "",
-    shallow: false,
-  });
-  const [status, setStatus] = useQueryState("status", {
-    defaultValue: "all",
-    shallow: false,
-  });
-  const [page, setPage] = useQueryState(
-    "page",
-    parseAsInteger.withDefault(1).withOptions({ shallow: false }),
-  );
-  const [size, setSize] = useQueryState(
-    "size",
-    parseAsInteger.withDefault(10).withOptions({ shallow: false }),
-  );
-  const [language, setLanguage] = useQueryState("language", { shallow: false });
-  const [license, setLicense] = useQueryState("license", { shallow: false });
+  const [{ page, size }, setPagination] = usePaginatedQuery();
   const [sort, setSort] = useSortQueryState("title", SortDirection.Asc);
-  const rows = feeds.map((feed) => <FeedsTableRow key={feed.id} feed={feed} />);
+  const [columnVisibility, setColumnVisibility] = useLocalStorage(
+    "feeds-table-col-visibility",
+    {},
+  );
+
+  const table = useReactTable({
+    data: feeds,
+    columns,
+    manualPagination: true,
+    manualSorting: true,
+    enableMultiRowSelection: false,
+    getCoreRowModel: getCoreRowModel(),
+    state: {
+      pagination: {
+        pageIndex: page - 1,
+        pageSize: size,
+      },
+      sorting: [
+        {
+          id: sort.sortBy,
+          desc: sort.sortDirection === SortDirection.Desc,
+        },
+      ],
+      columnVisibility,
+    },
+    pageCount: pagination.pageCount,
+    rowCount: pagination.totalCount,
+    onPaginationChange: (updater) => {
+      if (typeof updater !== "function") return;
+
+      const newPageInfo = updater(table.getState().pagination);
+
+      setPagination({
+        page: newPageInfo.pageIndex + 1,
+        size: newPageInfo.pageSize,
+      });
+    },
+    onSortingChange: (updater) => {
+      if (typeof updater !== "function") return;
+
+      const newSortInfo = updater(table.getState().sorting);
+
+      setSort({
+        sortBy: newSortInfo[0]?.id,
+        sortDirection: newSortInfo[0]?.desc
+          ? SortDirection.Desc
+          : SortDirection.Asc,
+      });
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+  });
 
   return (
     <>
-      {/* Filter Bar */}
-      <FilterBar>
-        <SearchTextInput
-          size="xs"
-          w="20rem"
-          placeholder="Search feeds..."
-          value={search}
-          onChange={(ev) => {
-            setSearch(ev.target.value);
-          }}
-        />
-        <LanguageFeedFilter value={language} onChange={setLanguage} />
-        <LicenseFeedFilter value={license} onChange={setLicense} />
-        <StatusFeedFilter value={status} onChange={setStatus} />
-      </FilterBar>
-      {/* Table */}
-      <Table layout="fixed" highlightOnHover>
-        <TableThead>
-          <TableTr>
-            <TableThSortGroup sort={sort} onChange={setSort}>
-              <TableThSortNew w="30%" sortField="title">
-                Title
-              </TableThSortNew>
-              <TableThSortNew w="40%" sortField="url">
-                URL
-              </TableThSortNew>
-              <TableThSortNew w="15%" sortField="license">
-                License
-              </TableThSortNew>
-              <TableThSortNew w="15%" sortField="language">
-                Language
-              </TableThSortNew>
-              <TableThAction w="50px" />
-            </TableThSortGroup>
-          </TableTr>
-        </TableThead>
-        <TableTbody>{rows}</TableTbody>
-      </Table>
-      {/* Pagination */}
-      <PaginationBar
-        noun="feeds"
-        page={page}
-        size={size}
-        totalPages={pagination.pageCount}
-        totalItems={pagination.totalCount}
-        onPageChange={setPage}
-        onSizeChange={setSize}
-      />
+      <FeedsFilterBar accessory={<DataTableViewOptions table={table} />} />
+      <DataTable table={table} />
+      <DataTablePagination table={table} />
     </>
   );
 }
