@@ -1,18 +1,10 @@
 import { Field } from "@/domains/sync/feed-parser/types";
+import * as cheerio from "cheerio";
 import { decodeHTML } from "entities";
 import { XMLBuilder } from "fast-xml-parser";
 
-export function stripHtml(str: string) {
-  str = str.replace(
-    /([^\n])<\/?(h|br|p|ul|ol|li|blockquote|section|table|tr|div)(?:.|\n)*?>([^\n])/gm,
-    "$1\n$3",
-  );
-  str = str.replace(/<(?:.|\n)*?>/gm, "");
-  return str;
-}
-
 export function getSnippet(str: string | undefined) {
-  return str ? decodeHTML(stripHtml(str)).trim() : undefined;
+  return str ? cheerio.load(str).text().trim() : undefined;
 }
 
 /**
