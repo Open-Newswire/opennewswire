@@ -1,16 +1,30 @@
 "use client";
 
-import { TableActionMenu } from "@/components/Table";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { removeUser } from "@/domains/users/triggers";
 import { User } from "@/domains/users/types";
-import { MenuItem } from "@mantine/core";
+import { MoreHorizontal } from "lucide-react";
 
 export function UsersActionMenu({ user }: { user: User }) {
   return (
-    <TableActionMenu>
-      <MenuItem color="red" onClick={() => removeUser(user)}>
-        Delete User
-      </MenuItem>
-    </TableActionMenu>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem variant="destructive" onClick={() => removeUser(user)}>
+          Delete User
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

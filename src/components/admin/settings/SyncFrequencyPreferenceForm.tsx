@@ -1,9 +1,16 @@
 "use client";
 
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { setPreference } from "@/domains/app-preferences/actions";
 import { SyncFrequencyPreference } from "@/domains/app-preferences/schemas";
-import { Group, NumberInput, Select, Text } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useState } from "react";
 import { z } from "zod";
 
 interface SyncFrequencyPreferenceFormProps {
@@ -13,37 +20,47 @@ interface SyncFrequencyPreferenceFormProps {
 export function SyncFrequencyPreferenceForm({
   value,
 }: SyncFrequencyPreferenceFormProps) {
-  async function handleSyncFrequencyChange(
-    value: z.infer<(typeof SyncFrequencyPreference)["schema"]>,
+  const [formValues, setFormValues] = useState(value);
+
+  async function handleChange(
+    newValues: z.infer<(typeof SyncFrequencyPreference)["schema"]>,
   ) {
-    await setPreference(SyncFrequencyPreference, value);
+    setFormValues(newValues);
+    await setPreference(SyncFrequencyPreference, newValues);
   }
 
-  const form = useForm({
-    mode: "uncontrolled",
-    initialValues: value,
-    onValuesChange: async (values) => {
-      await handleSyncFrequencyChange(values);
-    },
-  });
-
   return (
-    <Group gap="xs">
-      <Text size="sm">Automatically sync all active feeds every </Text>
-      <NumberInput
+    <div className="flex items-center gap-1.5">
+      <span className="text-sm">Automatically sync all active feeds every</span>
+      <Input
+        type="number"
+        className="w-20"
         disabled
-        display="inline-block"
-        w="5rem"
-        {...form.getInputProps("period")}
+        value={formValues.period}
+        onChange={(e) =>
+          handleChange({ ...formValues, period: Number(e.target.value) })
+        }
       />
       <Select
         disabled
-        display="inline-block"
-        w="7rem"
-        data={["minutes", "hours", "days"]}
-        {...form.getInputProps("unit")}
-      ></Select>
-      <Text size="sm">.</Text>
-    </Group>
+        value={formValues.unit}
+        onValueChange={(unit) =>
+          handleChange({
+            ...formValues,
+            unit: unit as typeof formValues.unit,
+          })
+        }
+      >
+        <SelectTrigger className="w-28">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="minutes">minutes</SelectItem>
+          <SelectItem value="hours">hours</SelectItem>
+          <SelectItem value="days">days</SelectItem>
+        </SelectContent>
+      </Select>
+      <span className="text-sm">.</span>
+    </div>
   );
 }
