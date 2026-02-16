@@ -41,12 +41,15 @@ interface RetentionPolicy {
   minimumItems: number;
 }
 
-interface Logger {
-  info: (msg: string) => Promise<void>;
+export interface SyncLogger {
+  info: (msg: string, ...args: any) => void;
+  warn: (msg: string, ...args: any) => void;
+  error: (msg: string, ...args: any) => void;
+  debug: (msg: string, ...args: any) => void;
 }
 export interface Context {
   // Common job logger
-  logger: Logger;
+  logger: SyncLogger;
   // Feed being parsed
   feed: Feed;
   // Retention policy describing how many items should be captured

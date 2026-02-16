@@ -3,17 +3,17 @@ import { Context } from "@/domains/sync/types";
 import prisma from "@/lib/prisma";
 import { Status, SyncJob } from "@prisma/client";
 import { sub } from "date-fns";
-import { execute } from "../job/job";
+import { execute } from "./job";
 
 export async function run(job: SyncJob) {
   const logger = new DatabaseLogger(job);
 
   try {
-    await logger.info(`Starting job for feedId ${job.feedId}`);
+    logger.info(`Starting job for feedId ${job.feedId}`);
     const feed = await prisma.feed.findFirst({ where: { id: job.feedId! } });
 
     if (!feed) {
-      await logger.error(`Error fetching feed for feedId ${job.feedId}`);
+      logger.error(`Error fetching feed for feedId ${job.feedId}`);
       await markFailure(job);
       return;
     }
@@ -35,10 +35,10 @@ export async function run(job: SyncJob) {
 
     await execute(context);
 
-    await logger.info("Completed sync");
+    logger.info("Completed sync");
     await markSuccess(job);
   } catch (err: any) {
-    await logger.error(`Error executing sync. ${err.message}`);
+    logger.error(`Error executing sync. ${err.message}`);
     await markFailure(job);
   } finally {
     await logger.flush();
