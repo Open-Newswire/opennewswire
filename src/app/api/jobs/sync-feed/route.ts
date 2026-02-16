@@ -1,5 +1,5 @@
+import { run } from "@/domains/sync/executor";
 import prisma from "@/lib/prisma";
-import { run } from "@/domains/sync/runner/executor";
 import { z } from "zod";
 
 const schema = z.object({

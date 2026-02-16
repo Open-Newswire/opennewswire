@@ -1,16 +1,20 @@
-import { Parser } from "@/lib/feed-parser/parser";
-import prisma from "@/lib/prisma";
+import { buildOrderBy, buildWhere } from "@/domains/feeds/query-converter";
 import { FeedQuery, SaveFeedParams } from "@/domains/feeds/schemas";
 import {
-  buildOrderBy,
-  buildWhere,
-} from "@/domains/feeds/query-converter";
+  Feed,
+  FeedPreview,
+  FeedsWithLicenseAndLanguage,
+} from "@/domains/feeds/types";
+import { BasicLogger } from "@/domains/sync/basic-logger";
 import { dispatchAllSync, dispatchSync } from "@/domains/sync/dispatcher";
-import { forceFetch } from "@/domains/sync/parser/parser";
-import { FeedPreview, FeedsWithLicenseAndLanguage } from "@/domains/feeds/types";
+import { Parser } from "@/domains/sync/feed-parser/parser";
+import { forceFetch } from "@/domains/sync/parser";
+import prisma from "@/lib/prisma";
 import { fetchIconFromFeed } from "@/utils/parse-website-icon";
 
-const parser = new Parser();
+const parser = new Parser({
+  logger: new BasicLogger(),
+});
 
 export const fetchFeeds = async (query: FeedQuery) => {
   return prisma.feed
@@ -97,7 +101,7 @@ export const refreshLogo = async (id: string) => {
 
   try {
     const rawFeed = await forceFetch(feed.url);
-    const parsedFeed = await parser.parseString(rawFeed);
+    const parsedFeed = await parser.parseString(rawFeed, feed);
     const iconUrl = await fetchIconFromFeed(parsedFeed);
 
     await prisma.feed.update({
@@ -119,7 +123,7 @@ export const deleteFeed = async (id: string) => {
 
 export const fetchFeedPreview = async (url: string): Promise<FeedPreview> => {
   const rawFeed = await forceFetch(url);
-  const parsedFeed = await parser.parseString(rawFeed);
+  const parsedFeed = await parser.parseString(rawFeed, {} as Feed);
   const iconUrl = (await fetchIconFromFeed(parsedFeed)) ?? undefined;
 
   return {

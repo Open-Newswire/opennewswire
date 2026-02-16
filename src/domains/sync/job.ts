@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
-import { parseFeed } from "../parser/parser";
-import { Context, FetchStatus, TransientItem } from "../types";
+import { parseFeed } from "./parser";
+import { Context, FetchStatus, TransientItem } from "./types";
 
 export async function execute(context: Context) {
   const { feed, logger } = context;
@@ -17,7 +17,7 @@ export async function execute(context: Context) {
   // Some feeds return items with the same guid, which trips things up. Remove them
   parsedItems = dedupeItems(parsedItems);
 
-  await logger.info(`Fetched and parsed ${parsedItems.length} articles total`);
+  logger.info(`Fetched and parsed ${parsedItems.length} articles total`);
 
   // 2. Find existing items matching guid
   const resultItemGuids = parsedItems.map((item) => item.guid);
@@ -33,7 +33,7 @@ export async function execute(context: Context) {
   });
   const existingItemGuids = existingItems.map((item) => item.guid);
 
-  await logger.info(`Found ${existingItems.length} matching existing articles`);
+  logger.info(`Found ${existingItems.length} matching existing articles`);
 
   // 3. Insert new items
   const newItems = parsedItems

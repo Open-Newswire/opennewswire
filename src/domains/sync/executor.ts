@@ -1,52 +1,19 @@
-import prisma from "@/lib/prisma";
+import { DatabaseLogger } from "@/domains/sync/db-logger";
 import { Context } from "@/domains/sync/types";
+import prisma from "@/lib/prisma";
 import { Status, SyncJob } from "@prisma/client";
 import { sub } from "date-fns";
-import { execute } from "../job/job";
-
-class BasicDbLogger {
-  private job: SyncJob;
-  private log: string[] = [];
-
-  constructor(job: SyncJob) {
-    this.job = job;
-  }
-
-  async info(message: string) {
-    console.log(message);
-    await this.write(message);
-  }
-
-  async error(message: string) {
-    console.error(message);
-    await this.write(message);
-  }
-
-  async flush() {
-    await prisma.syncJob.update({
-      where: {
-        id: this.job.id,
-      },
-      data: {
-        log: this.log,
-      },
-    });
-  }
-
-  private async write(message: string) {
-    this.log.push(message);
-  }
-}
+import { execute } from "./job";
 
 export async function run(job: SyncJob) {
-  const logger = new BasicDbLogger(job);
+  const logger = new DatabaseLogger(job);
 
   try {
-    await logger.info(`Starting job for feedId ${job.feedId}`);
+    logger.info(`Starting job for feedId ${job.feedId}`);
     const feed = await prisma.feed.findFirst({ where: { id: job.feedId! } });
 
     if (!feed) {
-      await logger.error(`Error fetching feed for feedId ${job.feedId}`);
+      logger.error(`Error fetching feed for feedId ${job.feedId}`);
       await markFailure(job);
       return;
     }
@@ -68,10 +35,10 @@ export async function run(job: SyncJob) {
 
     await execute(context);
 
-    await logger.info("Completed sync");
+    logger.info("Completed sync");
     await markSuccess(job);
   } catch (err: any) {
-    await logger.error(`Error executing sync. ${err.message}`);
+    logger.error(`Error executing sync. ${err.message}`);
     await markFailure(job);
   } finally {
     await logger.flush();

@@ -1,12 +1,8 @@
-import { Field } from "@/lib/feed-parser/types";
+import { Field } from "@/domains/sync/feed-parser/types";
 
 interface Fields {
   feed: Field[];
   item: Field[];
-}
-
-function includeITunes(f: string) {
-  return ["itunes:" + f, f];
 }
 
 const fields: Fields = {

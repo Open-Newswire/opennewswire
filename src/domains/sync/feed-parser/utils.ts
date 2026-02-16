@@ -1,18 +1,10 @@
-import { Field } from "@/lib/feed-parser/types";
+import { Field } from "@/domains/sync/feed-parser/types";
+import * as cheerio from "cheerio";
 import { decodeHTML } from "entities";
 import { XMLBuilder } from "fast-xml-parser";
 
-export function stripHtml(str: string) {
-  str = str.replace(
-    /([^\n])<\/?(h|br|p|ul|ol|li|blockquote|section|table|tr|div)(?:.|\n)*?>([^\n])/gm,
-    "$1\n$3",
-  );
-  str = str.replace(/<(?:.|\n)*?>/gm, "");
-  return str;
-}
-
 export function getSnippet(str: string | undefined) {
-  return str ? decodeHTML(stripHtml(str)).trim() : undefined;
+  return str ? cheerio.load(str).text().trim() : undefined;
 }
 
 /**
@@ -47,12 +39,30 @@ export function getTextContent(value: any): any {
   return value;
 }
 
-export function getLink(links: any[], rel: string, fallbackIdx: number) {
+export function getAtomLink(links: any[], rel: string, fallbackIdx: number) {
   if (!links || !Array.isArray(links)) return;
+
   for (let i = 0; i < links.length; ++i) {
     if (links[i].$rel === rel) return links[i].$href;
   }
+
   if (links[fallbackIdx]) return links[fallbackIdx].$href;
+}
+
+export function getAtomDate(entry: any) {
+  let pubDate;
+
+  if (entry.published && typeof entry.published === "string") {
+    pubDate = entry.published;
+  }
+
+  if (!pubDate && entry.updated && typeof entry.updated === "string") {
+    pubDate = entry.updated;
+  }
+
+  if (!pubDate) {
+    return new Date();
+  }
 }
 
 export function getContent(content: any) {
@@ -97,7 +107,11 @@ export function copyFromXML(
     if (xml[from] !== undefined && dest[to] === undefined) {
       let value = xml[from];
       // If it's an array with a single string element, unwrap it
-      if (Array.isArray(value) && value.length === 1 && typeof value[0] === "string") {
+      if (
+        Array.isArray(value) &&
+        value.length === 1 &&
+        typeof value[0] === "string"
+      ) {
         value = value[0];
       }
       dest[to] = value;

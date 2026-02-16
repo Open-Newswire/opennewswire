@@ -1,3 +1,5 @@
+import { TransientItem } from "@/domains/sync";
+
 export type Field = string | [string, string, object?];
 
 export interface Enclosure {
@@ -43,21 +45,8 @@ export interface ParserOutput {
   paginationLinks?: PaginationLinks;
   link?: string;
   title?: string;
-  items: Item[];
+  items: TransientItem[];
   feedUrl?: string;
   description?: string;
   lastBuildDate?: string;
-  itunes?: {
-    [key: string]: any;
-    image?: string;
-    owner?: {
-      name?: string;
-      email?: string;
-    };
-    author?: string;
-    summary?: string;
-    explicit?: string;
-    categories?: string[];
-    keywords?: string[];
-  };
 }

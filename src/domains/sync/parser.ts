@@ -1,6 +1,5 @@
-import { Parser } from "@/lib/feed-parser/parser";
-import { Item } from "@/lib/feed-parser/types";
 import { Feed } from "@/domains/feeds/types";
+import { Parser } from "@/domains/sync/feed-parser/parser";
 import { isBefore } from "date-fns";
 import { StatusCodes } from "http-status-codes";
 import {
@@ -10,8 +9,7 @@ import {
   PageResult,
   ParserResult,
   TransientItem,
-} from "../types";
-import { sanitize } from "./sanitizer";
+} from "./types";
 
 // TODO: Make these configurable
 const BASE_HEADERS = {
@@ -47,7 +45,9 @@ export async function forceFetch(url: string) {
  */
 export async function parseFeed(context: Context): Promise<ParserResult> {
   const { logger, feed } = context;
-  const parser = new Parser();
+  const parser = new Parser({
+    logger: context.logger,
+  });
   let url = feed.url;
   let page = 1;
   let allItems: TransientItem[] = [];
@@ -63,6 +63,7 @@ export async function parseFeed(context: Context): Promise<ParserResult> {
 
     const { items, paginationLinks } = await parser.parseString(
       fetchResult.body,
+      feed,
     );
     headers = fetchResult.headers;
 
@@ -127,15 +128,12 @@ async function fetchFeed(url: string, feed: Feed): Promise<FetchResult> {
   };
 }
 
-function parsePage(items: Item[], context: Context): PageResult {
+function parsePage(items: TransientItem[], context: Context): PageResult {
   const { policy, logger } = context;
 
   const collector: TransientItem[] = [];
 
   for (let item of items) {
-    // Sanitize the item to remove feed discrepancies between dates, guids, and more
-    const transient = sanitize(item, context);
-
     // Determine if the item should be hidden based on filter keywords
     if (
       context.feed.filterKeywords &&
@@ -145,7 +143,7 @@ function parsePage(items: Item[], context: Context): PageResult {
 
       const shouldHide = keywords.some((keyword) => {
         const normalizedKeyword = keyword.trim();
-        const result = hasFilteredKeywords(transient, normalizedKeyword);
+        const result = hasFilteredKeywords(item, normalizedKeyword);
 
         if (result) {
           logger.info(`Encountered filtered keyword: ${normalizedKeyword}`);
@@ -154,13 +152,13 @@ function parsePage(items: Item[], context: Context): PageResult {
         return result;
       });
 
-      transient.isHidden = shouldHide;
+      item.isHidden = shouldHide;
     }
 
     // Execute retention logic
     if (
       context.count >= policy.minimumItems &&
-      isBefore(policy.cutoffDate, transient.date)
+      isBefore(policy.cutoffDate, item.date)
     ) {
       return {
         items: collector,
@@ -168,7 +166,7 @@ function parsePage(items: Item[], context: Context): PageResult {
       };
     }
 
-    collector.push(transient);
+    collector.push(item);
   }
 
   return {
