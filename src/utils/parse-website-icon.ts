@@ -1,4 +1,4 @@
-import { ParserOutput } from "@/lib/feed-parser/types";
+import { ParserOutput } from "@/domains/sync/feed-parser/types";
 import getRootDomain from "@/utils/get-root-domain";
 import * as cheerio from "cheerio";
 import { parse } from "url";

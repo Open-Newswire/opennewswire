@@ -1,32 +1,18 @@
-import { Parser } from "../src/lib/feed-parser/parser";
+import { Parser } from "../src/domains/sync/feed-parser/parser";
+import { SyncLogger } from "../src/domains/sync/types";
 
-// Try different header sets to bypass Cloudflare
-const BROWSER_HEADERS = {
-  "user-agent":
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-  accept:
-    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-  "accept-language": "en-US,en;q=0.9",
-  "cache-control": "max-age=0",
-  priority: "u=0, i",
-  "sec-ch-ua":
-    '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-  "sec-ch-ua-mobile": "?0",
-  "sec-ch-ua-platform": '"macOS"',
-  "sec-fetch-dest": "document",
-  "sec-fetch-mode": "navigate",
-  "sec-fetch-site": "none",
-  "sec-fetch-user": "?1",
-  "upgrade-insecure-requests": "1",
-};
-
-const SIMPLE_HEADERS = {
+const BASE_HEADERS = {
   "user-agent": "FeedFetcher/1.0",
-  accept: "application/rss+xml, application/atom+xml, application/xml, text/xml",
+  accept:
+    "application/rss+xml, application/atom+xml, application/xml, text/xml",
 };
 
-// Default to simple headers - less likely to trigger Cloudflare
-const BASE_HEADERS = SIMPLE_HEADERS;
+const logger: SyncLogger = {
+  info: console.log,
+  warn: console.warn,
+  error: console.error,
+  debug: console.debug,
+};
 
 async function debugFeed(url: string) {
   console.log(`\n🔍 Debugging feed: ${url}\n`);
@@ -57,8 +43,8 @@ async function debugFeed(url: string) {
 
     // Parse the feed
     console.log("⚙️  Parsing feed...");
-    const parser = new Parser();
-    const result = await parser.parseString(xml);
+    const parser = new Parser({ logger });
+    const result = await parser.parseString(xml, {} as any);
     console.log(`✓ Parsed successfully\n`);
 
     // Display results
@@ -80,10 +66,8 @@ async function debugFeed(url: string) {
       const firstItem = result.items[0];
       console.log(`   Title: ${firstItem.title || "(no title)"}`);
       console.log(`   Link: ${firstItem.link || "(no link)"}`);
-      console.log(`   Date: ${firstItem.pubDate || "(no date)"}`);
-      console.log(
-        `   Author: ${firstItem.author || firstItem.creator || "(no author)"}`,
-      );
+      console.log(`   Date: ${firstItem.date || "(no date)"}`);
+      console.log(`   Author: ${firstItem.author || "(no author)"}`);
     }
 
     console.log("\n✅ Debug complete!\n");
