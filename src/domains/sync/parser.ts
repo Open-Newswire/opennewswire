@@ -1,3 +1,5 @@
+import { UserAgentPreference } from "@/domains/app-preferences/schemas";
+import { getPreference } from "@/domains/app-preferences/service";
 import { Feed } from "@/domains/feeds/types";
 import { Parser } from "@/domains/sync/feed-parser/parser";
 import { isBefore } from "date-fns";
@@ -11,7 +13,6 @@ import {
   TransientItem,
 } from "./types";
 
-// TODO: Make these configurable
 const BASE_HEADERS = {
   accept:
     "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -29,13 +30,20 @@ const BASE_HEADERS = {
   "upgrade-insecure-requests": "1",
 };
 
+async function getHeaders() {
+  const { userAgent } = await getPreference(UserAgentPreference);
+  return {
+    ...BASE_HEADERS,
+    "user-agent": userAgent,
+  };
+}
+
 /**
  * Fetches a feed, ignoring feed's last modified date and etag.
  */
 export async function forceFetch(url: string) {
-  const response = await fetch(url, {
-    headers: BASE_HEADERS,
-  });
+  const headers = await getHeaders();
+  const response = await fetch(url, { headers });
 
   return await response.text();
 }
@@ -53,9 +61,10 @@ export async function parseFeed(context: Context): Promise<ParserResult> {
   let allItems: TransientItem[] = [];
   let shouldContinue = true;
   let headers;
+  const requestHeaders = await getHeaders();
 
   do {
-    const fetchResult = await fetchFeed(url, feed);
+    const fetchResult = await fetchFeed(url, feed, requestHeaders);
 
     if (fetchResult.status === FetchStatus.NotModified) {
       return { status: FetchStatus.NotModified };
@@ -91,10 +100,10 @@ export async function parseFeed(context: Context): Promise<ParserResult> {
   };
 }
 
-async function fetchFeed(url: string, feed: Feed): Promise<FetchResult> {
+async function fetchFeed(url: string, feed: Feed, requestHeaders: Record<string, string>): Promise<FetchResult> {
   const response = await fetch(url, {
     headers: {
-      ...BASE_HEADERS,
+      ...requestHeaders,
       ...(feed.lastModifiedHeader && {
         "if-modified-since": feed.lastModifiedHeader,
       }),
