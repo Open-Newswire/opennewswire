@@ -10,22 +10,22 @@ export class DatabaseLogger implements SyncLogger {
     this.job = job;
   }
   warn(msg: string, ...args: any) {
-    console.warn(msg, args);
+    console.warn(msg, ...args);
     this.write(msg);
   }
 
   info(msg: string, ...args: any) {
-    console.log(msg, args);
+    console.log(msg, ...args);
     this.write(msg);
   }
 
   debug(msg: string, ...args: any) {
-    console.debug(msg, args);
+    console.debug(msg, ...args);
     this.write(msg);
   }
 
   error(msg: string, ...args: any) {
-    console.error(msg, args);
+    console.error(msg, ...args);
     this.write(msg);
   }
 

@@ -38,7 +38,12 @@ export async function run(job: SyncJob) {
     logger.info("Completed sync");
     await markSuccess(job);
   } catch (err: any) {
-    logger.error(`Error executing sync. ${err.message}`, JSON.stringify(err));
+    logger.error(
+      `Error executing sync. ${err.message}`,
+      err,
+      err.stack,
+      err.cause,
+    );
     await markFailure(job);
   } finally {
     await logger.flush();
