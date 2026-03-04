@@ -6,7 +6,7 @@ const nextConfig = {
       bodySizeLimit: "2mb",
     },
   },
-  serverExternalPackages: ["@node-rs/argon2"],
+  serverExternalPackages: ["@node-rs/argon2", "graphile-worker"],
 };
 
 export default nextConfig;
