@@ -5,6 +5,7 @@ export enum AppPreferenceKey {
   SyncJobHistoryRetention = "syncJobHistoryRetention",
   ArticleRetention = "articleRetention",
   EventsHistoryRetention = "eventsHistoryRetention",
+  UserAgent = "userAgent",
 }
 
 export type AppPreferenceSchema = z.ZodTypeAny;

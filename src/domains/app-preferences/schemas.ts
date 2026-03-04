@@ -49,3 +49,18 @@ export const EventsHistoryRetentionPreference: AppPreference<
   key: AppPreferenceKey.EventsHistoryRetention,
   schema: eventsHistoryRetentionPreferenceSchema,
 };
+
+const userAgentPreferenceSchema = z.object({
+  userAgent: z
+    .string()
+    .catch(
+      "Mozilla/5.0 (compatible; OpenNewswire/1.0; +https://github.com/opennewswire)",
+    ),
+});
+
+export const UserAgentPreference: AppPreference<
+  typeof userAgentPreferenceSchema
+> = {
+  key: AppPreferenceKey.UserAgent,
+  schema: userAgentPreferenceSchema,
+};
