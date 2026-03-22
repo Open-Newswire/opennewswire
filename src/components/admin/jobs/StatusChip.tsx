@@ -1,34 +1,33 @@
-import { Pill } from "@mantine/core";
+import { Badge } from "@/components/ui/badge";
 import { Status } from "@prisma/client";
 
-const statusStyles = {
+const statusStyles: Record<
+  Status,
+  { title: string; className: string }
+> = {
   [Status.COMPLETED]: {
     title: "Completed",
-    bg: "green.1",
-    color: "green.9",
+    className: "bg-green-100 text-green-900 border-green-200",
   },
   [Status.FAILED]: {
     title: "Failed",
-    bg: "red.1",
-    color: "red.9",
+    className: "bg-red-100 text-red-900 border-red-200",
   },
   [Status.IN_PROGRESS]: {
     title: "In Progress",
-    bg: "blue.1",
-    color: "blue.9",
+    className: "bg-blue-100 text-blue-900 border-blue-200",
   },
   [Status.NOT_STARTED]: {
     title: "Not Started",
-    bg: "grey.1",
-    color: "grey.9",
+    className: "bg-gray-100 text-gray-900 border-gray-200",
   },
 };
 
 export function StatusChip({ status }: { status: Status }) {
-  const { title, color, bg } = statusStyles[status];
+  const { title, className } = statusStyles[status];
   return (
-    <Pill c={color} bg={bg}>
+    <Badge variant="outline" className={className}>
       {title}
-    </Pill>
+    </Badge>
   );
 }
