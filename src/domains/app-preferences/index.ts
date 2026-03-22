@@ -4,5 +4,4 @@ export {
   getPreference,
   setPreference,
   getDiagnosticsReport,
-  runDiagnosticFix,
 } from "./actions";

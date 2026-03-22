@@ -1,8 +1,7 @@
 import prisma from "@/lib/prisma";
-import { scheduler, schedules } from "@/lib/scheduler";
 import { SyncFrequencyPreference } from "@/domains/app-preferences/schemas";
+import { rescheduleNextSyncAll } from "@/domains/sync/tasks/schedule-helpers";
 import { AppPreference } from "@/domains/app-preferences/types";
-import { toCron } from "@/utils/cron";
 import { z } from "zod";
 
 // Hooks with preference-specific logic that run when a preference changes
@@ -10,8 +9,7 @@ const updateHooks = {
   [SyncFrequencyPreference.key]: async (
     value: z.infer<typeof SyncFrequencyPreference.schema>,
   ) => {
-    const cron = toCron(value);
-    await scheduler.setSchedule(schedules.syncAll, cron);
+    await rescheduleNextSyncAll(value);
   },
 };
 
@@ -45,89 +43,32 @@ export async function setPreference<S extends z.ZodTypeAny>(
   }
 }
 
-export enum ScheduledDiagnosticStatus {
-  Missing = "Missing",
-  Misconfigured = "Misconfigured",
-  Ok = "Ok",
+export interface CronScheduleStatus {
+  identifier: string;
+  known: boolean;
 }
 
-interface ScheduleDiagnosticReport {
-  syncAll: ScheduledDiagnosticStatus;
-  cleanupJobs: ScheduledDiagnosticStatus;
-  cleanupArticles: ScheduledDiagnosticStatus;
-  enrichEvents: ScheduledDiagnosticStatus;
-}
+export async function getDiagnosticsReport(): Promise<CronScheduleStatus[]> {
+  const expectedIdentifiers = [
+    "scheduled-enrich-events",
+    "scheduled-cleanup-articles",
+    "scheduled-cleanup-events",
+    "scheduled-cleanup-jobs",
+  ];
 
-export async function getDiagnosticsReport() {
-  const report: Partial<ScheduleDiagnosticReport> = {};
-  // Fetch all schedules from QStash
-  const createdSchedules = await scheduler.getSchedules();
+  let knownIdentifiers: string[] = [];
 
-  for await (const [key, schedule] of Object.entries(schedules)) {
-    const createdSchedule = createdSchedules.find(
-      (s) => s.name == schedule.name,
-    );
-
-    if (!createdSchedule) {
-      // @ts-ignore
-      report[key] = ScheduledDiagnosticStatus.Missing;
-      continue;
-    }
-
-    if (schedule.defaultCron && schedule.defaultCron != createdSchedule?.cron) {
-      // @ts-ignore
-      report[key] = ScheduledDiagnosticStatus.Misconfigured;
-      continue;
-    }
-
-    if (schedule.name.startsWith("sync-all-")) {
-      const preference = await getPreference(SyncFrequencyPreference);
-      const expectedCron = toCron(preference);
-
-      if (expectedCron !== createdSchedule.cron) {
-        // @ts-ignore
-        report[key] = ScheduledDiagnosticStatus.Misconfigured;
-        continue;
-      }
-    }
-
-    // @ts-ignore
-    report[key] = ScheduledDiagnosticStatus.Ok;
+  try {
+    const rows = await prisma.$queryRaw<{ identifier: string }[]>`
+      SELECT identifier FROM graphile_worker._private_known_crontabs
+    `;
+    knownIdentifiers = rows.map((r) => r.identifier);
+  } catch {
+    // Table may not exist if worker hasn't started yet
   }
 
-  return report;
-}
-
-export async function runDiagnosticFix() {
-  for await (const schedule of Object.values(schedules)) {
-    if (schedule.defaultCron) {
-      await scheduler.setSchedule(
-        {
-          name: schedule.name,
-          path: schedule.path,
-        },
-        schedule.defaultCron,
-      );
-      console.info("Set QStash schedule:", schedule.name);
-      continue;
-    }
-
-    if (schedule.name.startsWith("sync-all-")) {
-      const preference = await getPreference(SyncFrequencyPreference);
-      const cron = toCron(preference);
-
-      await scheduler.setSchedule(
-        {
-          name: schedule.name,
-          path: schedule.path,
-        },
-        cron,
-        {
-          isAutomatic: true,
-        },
-      );
-      console.info("Set QStash schedule:", schedule.name);
-      continue;
-    }
-  }
+  return expectedIdentifiers.map((identifier) => ({
+    identifier,
+    known: knownIdentifiers.includes(identifier),
+  }));
 }

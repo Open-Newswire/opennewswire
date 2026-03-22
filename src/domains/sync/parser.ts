@@ -76,16 +76,16 @@ export async function parseFeed(context: Context): Promise<ParserResult> {
     );
     headers = fetchResult.headers;
 
-    logger.info(`Parsing page ${page}`);
+    logger.debug(`Parsing page ${page}`);
     const result = parsePage(items, context);
 
     if (paginationLinks?.next && result.shouldContinue) {
-      logger.info(`Feed has more pages, continuing parse`);
+      logger.debug(`Feed has more pages, continuing parse`);
 
       url = paginationLinks.next;
       page += 1;
     } else {
-      logger.info(`Stopping parse, last page or retention threshold reached`);
+      logger.debug(`Stopping parse, last page or retention threshold reached`);
 
       shouldContinue = false;
     }
@@ -100,7 +100,11 @@ export async function parseFeed(context: Context): Promise<ParserResult> {
   };
 }
 
-async function fetchFeed(url: string, feed: Feed, requestHeaders: Record<string, string>): Promise<FetchResult> {
+async function fetchFeed(
+  url: string,
+  feed: Feed,
+  requestHeaders: Record<string, string>,
+): Promise<FetchResult> {
   const response = await fetch(url, {
     headers: {
       ...requestHeaders,
@@ -155,7 +159,7 @@ function parsePage(items: TransientItem[], context: Context): PageResult {
         const result = hasFilteredKeywords(item, normalizedKeyword);
 
         if (result) {
-          logger.info(`Encountered filtered keyword: ${normalizedKeyword}`);
+          logger.warn(`Encountered filtered keyword: ${normalizedKeyword}`);
         }
 
         return result;

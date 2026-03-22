@@ -2,55 +2,65 @@ import { getDiagnosticsReport } from "@/domains/app-preferences/actions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Item,
-  ItemActions,
   ItemContent,
   ItemDescription,
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
 import { TabsContent } from "@/components/ui/tabs";
-import { ScheduledDiagnosticStatus } from "@/domains/app-preferences/service";
-import { CircleAlert, CircleCheck, CircleX, Info } from "lucide-react";
-import { DiagnosticFixButton } from "@/components/admin/settings/DiagnosticFixButton";
+import { CircleCheck, CircleX, Info } from "lucide-react";
 
-function getStatusIcon(status?: ScheduledDiagnosticStatus) {
-  switch (status) {
-    case ScheduledDiagnosticStatus.Ok:
-      return <CircleCheck className="text-green-500" />;
-    case ScheduledDiagnosticStatus.Misconfigured:
-      return <CircleAlert className="text-yellow-500" />;
-    case ScheduledDiagnosticStatus.Missing:
-    default:
-      return <CircleX className="text-red-500" />;
-  }
-}
+const DISPLAY_NAMES: Record<string, { title: string; description: string }> = {
+  "scheduled-enrich-events": {
+    title: "Enrich Analytic Events",
+    description:
+      "Adds location details to new analytics events using IP data.",
+  },
+  "scheduled-cleanup-articles": {
+    title: "Cleanup Articles",
+    description:
+      "Removes older articles based on your retention settings.",
+  },
+  "scheduled-cleanup-events": {
+    title: "Cleanup Events",
+    description:
+      "Clears out old analytics events based on your retention settings.",
+  },
+  "scheduled-cleanup-jobs": {
+    title: "Cleanup Sync History",
+    description:
+      "Clears out old sync logs once they're no longer needed.",
+  },
+};
 
 function DiagnosticItem({
   title,
   description,
-  status,
+  known,
 }: {
   title: string;
   description: string;
-  status?: ScheduledDiagnosticStatus;
+  known: boolean;
 }) {
   return (
     <Item>
-      <ItemMedia>{getStatusIcon(status)}</ItemMedia>
+      <ItemMedia>
+        {known ? (
+          <CircleCheck className="text-green-500" />
+        ) : (
+          <CircleX className="text-red-500" />
+        )}
+      </ItemMedia>
       <ItemContent>
         <ItemTitle>{title}</ItemTitle>
         <ItemDescription>{description}</ItemDescription>
       </ItemContent>
-      <ItemActions />
     </Item>
   );
 }
 
 export default async function DiagnosticSettings() {
   const report = await getDiagnosticsReport();
-  const hasIssues = Object.values(report).some(
-    (status) => status !== ScheduledDiagnosticStatus.Ok,
-  );
 
   return (
     <TabsContent value="diagnostics" className="my-4">
@@ -59,38 +69,20 @@ export default async function DiagnosticSettings() {
       </h3>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div>
-          {hasIssues && (
-            <Item variant="outline" className="bg-yellow-50">
-              <ItemContent>
-                <ItemTitle>
-                  Misconfigured or missing scheduled jobs detected
-                </ItemTitle>
-              </ItemContent>
-              <ItemActions>
-                <DiagnosticFixButton />
-              </ItemActions>
-            </Item>
-          )}
-          <DiagnosticItem
-            title="Sync Articles"
-            description="Automatically pulls in the latest articles from your connected news feeds."
-            status={report.syncAll}
-          />
-          <DiagnosticItem
-            title="Cleanup Articles"
-            description="Removes older articles based on your retention settings."
-            status={report.cleanupArticles}
-          />
-          <DiagnosticItem
-            title="Cleanup Sync History"
-            description="Clears out old sync logs once they're no longer needed."
-            status={report.cleanupJobs}
-          />
-          <DiagnosticItem
-            title="Enrich Analytic Events"
-            description="Adds location details to new analytics events using IP data."
-            status={report.enrichEvents}
-          />
+          {report.map((schedule) => {
+            const display = DISPLAY_NAMES[schedule.identifier] ?? {
+              title: schedule.identifier,
+              description: "",
+            };
+            return (
+              <DiagnosticItem
+                key={schedule.identifier}
+                title={display.title}
+                description={display.description}
+                known={schedule.known}
+              />
+            );
+          })}
         </div>
         <div>
           <Alert className="mb-auto">
@@ -98,13 +90,12 @@ export default async function DiagnosticSettings() {
             <AlertDescription>
               <p>
                 Open Newswire automatically runs background jobs to keep your
-                feeds up to date and your data tidy. These are scheduled by a
-                third-party scheduling service, which calls Open Newswire
-                endpoints to run the correct job.
+                feeds up to date and your data tidy. These jobs are managed by
+                the built-in worker process and scheduled via cron.
               </p>
               <p>
-                System Diagnostics check whether the jobs are correctly
-                configured and match your data retention preferences.
+                System Diagnostics verify that all expected job schedules are
+                registered with the worker.
               </p>
             </AlertDescription>
           </Alert>

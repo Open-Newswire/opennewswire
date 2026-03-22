@@ -35,14 +35,12 @@ export function SyncFrequencyPreferenceForm({
       <Input
         type="number"
         className="w-20"
-        disabled
         value={formValues.period}
         onChange={(e) =>
           handleChange({ ...formValues, period: Number(e.target.value) })
         }
       />
       <Select
-        disabled
         value={formValues.unit}
         onValueChange={(unit) =>
           handleChange({
