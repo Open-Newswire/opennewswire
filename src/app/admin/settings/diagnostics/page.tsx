@@ -72,11 +72,6 @@ export default async function DiagnosticSettings() {
             </Item>
           )}
           <DiagnosticItem
-            title="Sync Articles"
-            description="Automatically pulls in the latest articles from your connected news feeds."
-            status={report.syncAll}
-          />
-          <DiagnosticItem
             title="Cleanup Articles"
             description="Removes older articles based on your retention settings."
             status={report.cleanupArticles}

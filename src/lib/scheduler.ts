@@ -47,8 +47,4 @@ export const schedules: Record<string, Schedule> = {
     path: "/api/jobs/cleanup-articles",
     defaultCron: "0 0 * * *",
   },
-  syncAll: {
-    name: "sync-all-" + NAME_SUFFIX,
-    path: "/api/jobs/sync-all",
-  },
 };
