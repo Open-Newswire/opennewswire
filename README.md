@@ -22,7 +22,7 @@ First, ensure Docker is installed. Then, run:
 docker compose up -d
 ```
 
-from the project's root directory to start Docker containers with Postgres and the QStash development server (for handling job processing requests).
+from the project's root directory to start Docker containers with Postgres.
 
 Then, start the development server by running:
 
@@ -87,6 +87,6 @@ Run `npx prisma db push` to override your local database with the latest schema.
 
 Sometimes it's useful to mark a migration as applied without actually applying it. To do this, run `npx prisma migrate resolve --applied <migration-name>`
 
-## Upstash
+## Background Jobs
 
-Open Newswire uses QStash for scheduled jobs and worker queue messaging. Running `docker compose up` will ensure a QStash development server is started for local testing.
+Open Newswire uses Graphile Worker for scheduled jobs and background task processing. Jobs are defined in code and registered automatically when the worker starts.

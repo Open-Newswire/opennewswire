@@ -4,6 +4,10 @@ import {
   buildSyncAllCronItem,
   syncAllTask,
   syncFeedTask,
+  enrichEventsTask,
+  cleanupArticlesTask,
+  cleanupEventsTask,
+  cleanupJobsTask,
 } from "@/domains/sync/tasks";
 import { toCron } from "@/utils/cron";
 import {
@@ -12,11 +16,15 @@ import {
   run,
   type TaskSpec,
   type WorkerUtils,
-  type ParsedCronItem,
+  type CronItem,
 } from "graphile-worker";
 
 export const SYNC_FEED = "sync-feed";
 export const SYNC_ALL = "sync-all";
+export const ENRICH_EVENTS = "enrich-events";
+export const CLEANUP_ARTICLES = "cleanup-articles";
+export const CLEANUP_EVENTS = "cleanup-events";
+export const CLEANUP_JOBS = "cleanup-jobs";
 
 let workerUtils: WorkerUtils | null = null;
 
@@ -40,18 +48,42 @@ export async function addJob(
 
 export async function startWorker() {
   const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? "4", 10);
-  let parsedCrons: ParsedCronItem[] = [];
+
+  const cronItems: CronItem[] = [
+    {
+      task: ENRICH_EVENTS,
+      match: "*/15 * * * *",
+      identifier: "scheduled-enrich-events",
+    },
+    {
+      task: CLEANUP_ARTICLES,
+      match: "0 0 * * *",
+      identifier: "scheduled-cleanup-articles",
+    },
+    {
+      task: CLEANUP_EVENTS,
+      match: "0 0 * * *",
+      identifier: "scheduled-cleanup-events",
+    },
+    {
+      task: CLEANUP_JOBS,
+      match: "0 11 * * *",
+      identifier: "scheduled-cleanup-jobs",
+    },
+  ];
 
   try {
     const preference = await getPreference(SyncFrequencyPreference);
     const cron = toCron(preference);
-    parsedCrons = parseCronItems([buildSyncAllCronItem(cron)]);
+    cronItems.push(buildSyncAllCronItem(cron));
     console.log(`[graphile-worker] Sync schedule: ${cron}`);
   } catch {
     console.warn(
-      "[graphile-worker] Could not load sync preference, starting without cron schedule",
+      "[graphile-worker] Could not load sync preference, starting without sync cron schedule",
     );
   }
+
+  const parsedCrons = parseCronItems(cronItems);
 
   try {
     await run({
@@ -60,6 +92,10 @@ export async function startWorker() {
       taskList: {
         [SYNC_FEED]: syncFeedTask,
         [SYNC_ALL]: syncAllTask,
+        [ENRICH_EVENTS]: enrichEventsTask,
+        [CLEANUP_ARTICLES]: cleanupArticlesTask,
+        [CLEANUP_EVENTS]: cleanupEventsTask,
+        [CLEANUP_JOBS]: cleanupJobsTask,
       },
       parsedCronItems: parsedCrons,
     });

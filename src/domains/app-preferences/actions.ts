@@ -22,7 +22,3 @@ export const getDiagnosticsReport = requireAuth(
     return AppPreferencesService.getDiagnosticsReport();
   },
 );
-
-export const runDiagnosticFix = requireAuth(async function runDiagnosticFix() {
-  await AppPreferencesService.runDiagnosticFix();
-});

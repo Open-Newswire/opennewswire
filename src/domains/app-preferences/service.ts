@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import { scheduler, schedules } from "@/lib/scheduler";
 import { SyncFrequencyPreference } from "@/domains/app-preferences/schemas";
 import { rescheduleNextSyncAll } from "@/domains/sync/tasks/schedule-helpers";
 import { AppPreference } from "@/domains/app-preferences/types";
@@ -44,58 +43,33 @@ export async function setPreference<S extends z.ZodTypeAny>(
   }
 }
 
-export enum ScheduledDiagnosticStatus {
-  Missing = "Missing",
-  Misconfigured = "Misconfigured",
-  Ok = "Ok",
+export interface CronScheduleStatus {
+  identifier: string;
+  known: boolean;
 }
 
-interface ScheduleDiagnosticReport {
-  cleanupJobs: ScheduledDiagnosticStatus;
-  cleanupArticles: ScheduledDiagnosticStatus;
-  enrichEvents: ScheduledDiagnosticStatus;
-}
+export async function getDiagnosticsReport(): Promise<CronScheduleStatus[]> {
+  const expectedIdentifiers = [
+    "scheduled-enrich-events",
+    "scheduled-cleanup-articles",
+    "scheduled-cleanup-events",
+    "scheduled-cleanup-jobs",
+    "scheduled-sync-all",
+  ];
 
-export async function getDiagnosticsReport() {
-  const report: Partial<ScheduleDiagnosticReport> = {};
-  // Fetch all schedules from QStash
-  const createdSchedules = await scheduler.getSchedules();
+  let knownIdentifiers: string[] = [];
 
-  for await (const [key, schedule] of Object.entries(schedules)) {
-    const createdSchedule = createdSchedules.find(
-      (s) => s.name == schedule.name,
-    );
-
-    if (!createdSchedule) {
-      // @ts-ignore
-      report[key] = ScheduledDiagnosticStatus.Missing;
-      continue;
-    }
-
-    if (schedule.defaultCron && schedule.defaultCron != createdSchedule?.cron) {
-      // @ts-ignore
-      report[key] = ScheduledDiagnosticStatus.Misconfigured;
-      continue;
-    }
-
-    // @ts-ignore
-    report[key] = ScheduledDiagnosticStatus.Ok;
+  try {
+    const rows = await prisma.$queryRaw<{ identifier: string }[]>`
+      SELECT identifier FROM graphile_worker._private_known_crontabs
+    `;
+    knownIdentifiers = rows.map((r) => r.identifier);
+  } catch {
+    // Table may not exist if worker hasn't started yet
   }
 
-  return report;
-}
-
-export async function runDiagnosticFix() {
-  for await (const schedule of Object.values(schedules)) {
-    if (schedule.defaultCron) {
-      await scheduler.setSchedule(
-        {
-          name: schedule.name,
-          path: schedule.path,
-        },
-        schedule.defaultCron,
-      );
-      console.info("Set QStash schedule:", schedule.name);
-    }
-  }
+  return expectedIdentifiers.map((identifier) => ({
+    identifier,
+    known: knownIdentifiers.includes(identifier),
+  }));
 }
