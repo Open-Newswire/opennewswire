@@ -1,36 +1,29 @@
-import { Pill } from "@mantine/core";
+import { Badge } from "@/components/ui/badge";
 import { Trigger } from "@prisma/client";
-import { IconBolt, IconRefresh } from "@tabler/icons-react";
-import classes from "./TriggerChip.module.css";
+import { RefreshCw, Zap } from "lucide-react";
 
-const triggerStyles = {
+const triggerStyles: Record<
+  Trigger,
+  { title: string; className: string; Icon: React.FC<{ className?: string }> }
+> = {
   [Trigger.MANUAL]: {
     title: "Manual",
-    bg: "blue.1",
-    color: "blue.9",
-    Icon: IconBolt,
+    className: "bg-blue-100 text-blue-900 border-blue-200",
+    Icon: Zap,
   },
   [Trigger.AUTOMATIC]: {
     title: "Automatic",
-    bg: "green.1",
-    color: "green.9",
-    Icon: IconRefresh,
+    className: "bg-green-100 text-green-900 border-green-200",
+    Icon: RefreshCw,
   },
 };
 
 export function TriggerChip({ trigger }: { trigger: Trigger }) {
-  const { title, color, bg, Icon } = triggerStyles[trigger];
+  const { title, className, Icon } = triggerStyles[trigger];
   return (
-    <Pill
-      c={color}
-      bg={bg}
-      classNames={{
-        root: classes.root,
-        label: classes.label,
-      }}
-    >
-      <Icon />
+    <Badge variant="outline" className={className}>
+      <Icon className="h-3 w-3" />
       {title}
-    </Pill>
+    </Badge>
   );
 }
