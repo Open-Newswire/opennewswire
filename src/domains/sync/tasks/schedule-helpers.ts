@@ -1,25 +1,11 @@
 import { addJob, SYNC_ALL } from "@/lib/worker";
 import { toCron } from "@/utils/cron";
 import { CronExpressionParser } from "cron-parser";
-import { CronItem } from "graphile-worker";
-
-export function buildSyncAllCronItem(cron: string): CronItem {
-  return {
-    task: SYNC_ALL,
-    match: cron,
-    options: {
-      backfillPeriod: 0,
-      jobKey: "scheduled-sync-all",
-      jobKeyMode: "replace",
-    },
-    payload: { isAutomatic: true },
-    identifier: "scheduled-sync-all",
-  };
-}
 
 /**
- * Reschedules the next sync-all job immediately using addJob with a computed runAt.
- * Called when the sync frequency preference changes at runtime.
+ * Schedules the next sync-all job based on the given frequency preference.
+ * Uses addJob to insert into the database, so it works across processes
+ * (e.g. Next.js server action → Graphile Worker process).
  */
 export async function rescheduleNextSyncAll(preference: {
   period: number;

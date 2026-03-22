@@ -54,7 +54,6 @@ export async function getDiagnosticsReport(): Promise<CronScheduleStatus[]> {
     "scheduled-cleanup-articles",
     "scheduled-cleanup-events",
     "scheduled-cleanup-jobs",
-    "scheduled-sync-all",
   ];
 
   let knownIdentifiers: string[] = [];

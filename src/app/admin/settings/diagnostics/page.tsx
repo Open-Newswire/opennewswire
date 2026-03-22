@@ -31,11 +31,6 @@ const DISPLAY_NAMES: Record<string, { title: string; description: string }> = {
     description:
       "Clears out old sync logs once they're no longer needed.",
   },
-  "scheduled-sync-all": {
-    title: "Sync All Feeds",
-    description:
-      "Periodically syncs all active feeds on your configured schedule.",
-  },
 };
 
 function DiagnosticItem({

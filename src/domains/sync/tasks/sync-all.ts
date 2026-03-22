@@ -1,7 +1,10 @@
+import { SyncFrequencyPreference } from "@/domains/app-preferences/schemas";
+import { getPreference } from "@/domains/app-preferences/service";
 import prisma from "@/lib/prisma";
 import { addJob, SYNC_FEED } from "@/lib/worker";
 import { Status, Trigger } from "@prisma/client";
 import { Task } from "graphile-worker";
+import { rescheduleNextSyncAll } from "./schedule-helpers";
 
 interface SyncAllPayload {
   isAutomatic?: boolean;
@@ -10,6 +13,12 @@ interface SyncAllPayload {
 export const syncAllTask: Task = async (payload, _helpers) => {
   const { isAutomatic } = payload as SyncAllPayload;
   const trigger = isAutomatic ? Trigger.AUTOMATIC : Trigger.MANUAL;
+
+  // Schedule the next run first, so it's always queued even if this run fails
+  if (isAutomatic) {
+    const preference = await getPreference(SyncFrequencyPreference);
+    await rescheduleNextSyncAll(preference);
+  }
 
   const parentJob = await prisma.syncJob.create({
     data: {

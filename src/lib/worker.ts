@@ -1,7 +1,7 @@
 import { SyncFrequencyPreference } from "@/domains/app-preferences/schemas";
 import { getPreference } from "@/domains/app-preferences/service";
 import {
-  buildSyncAllCronItem,
+  rescheduleNextSyncAll,
   syncAllTask,
   syncFeedTask,
   enrichEventsTask,
@@ -9,7 +9,6 @@ import {
   cleanupEventsTask,
   cleanupJobsTask,
 } from "@/domains/sync/tasks";
-import { toCron } from "@/utils/cron";
 import {
   makeWorkerUtils,
   parseCronItems,
@@ -72,17 +71,6 @@ export async function startWorker() {
     },
   ];
 
-  try {
-    const preference = await getPreference(SyncFrequencyPreference);
-    const cron = toCron(preference);
-    cronItems.push(buildSyncAllCronItem(cron));
-    console.log(`[graphile-worker] Sync schedule: ${cron}`);
-  } catch {
-    console.warn(
-      "[graphile-worker] Could not load sync preference, starting without sync cron schedule",
-    );
-  }
-
   const parsedCrons = parseCronItems(cronItems);
 
   try {
@@ -107,6 +95,18 @@ export async function startWorker() {
     console.error(
       "[graphile-worker] Failed to start — is the database reachable?",
       err,
+    );
+  }
+
+  // Seed the first sync-all job. Subsequent runs are self-scheduled
+  // by syncAllTask after each completion.
+  try {
+    const preference = await getPreference(SyncFrequencyPreference);
+    await rescheduleNextSyncAll(preference);
+    console.log("[graphile-worker] Seeded initial sync-all job");
+  } catch {
+    console.warn(
+      "[graphile-worker] Could not seed sync-all job — preference not found",
     );
   }
 }
