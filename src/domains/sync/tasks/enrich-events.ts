@@ -1,8 +1,6 @@
 import prisma from "@/lib/prisma";
-import { addJob, ENRICH_EVENTS } from "@/lib/worker";
 import { EnrichmentStatus } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
-import { addMinutes } from "date-fns";
 import { Task } from "graphile-worker";
 
 interface LocationResponse {
@@ -21,38 +19,42 @@ interface LocationResult {
 const EVENT_LIMIT = 5000;
 
 export const enrichEventsTask: Task = async (_payload, _helpers) => {
-  const result = await getUnenrichedEvents();
+  try {
+    const result = await getUnenrichedEvents();
 
-  console.info(`Found ${result.events.length} unenriched events`);
+    console.info(`Found ${result.events.length} unenriched events`);
 
-  for (const event of result.events) {
-    let locationResult: LocationResult | undefined;
+    for (const event of result.events) {
+      let locationResult: LocationResult | undefined;
 
-    if (event.ipAddress) {
-      locationResult = await resolveIpToLocation(event.ipAddress);
+      if (event.ipAddress) {
+        locationResult = await resolveIpToLocation(event.ipAddress);
 
-      if (locationResult.tryLater) {
-        await scheduleReprocess();
-        console.log("IP address rate limit reached, scheduled followup");
-        return;
+        if (locationResult.tryLater) {
+          console.log(
+            "IP address rate limit reached, will retry next cron run",
+          );
+          return;
+        }
+
+        if (
+          locationResult.result?.status === "fail" ||
+          locationResult.status === "fail"
+        ) {
+          console.log("IP address lookup failed, skipping event");
+          console.log(locationResult.result);
+          continue;
+        }
       }
 
-      if (
-        locationResult.result?.status === "fail" ||
-        locationResult.status === "fail"
-      ) {
-        console.log("IP address lookup failed, skipping event");
-        console.log(locationResult.result);
-        continue;
-      }
+      await updateEvent(event.id, locationResult);
     }
 
-    await updateEvent(event.id, locationResult);
-  }
-
-  if (result.hasMore) {
-    await scheduleReprocess();
-    console.log("More events to enrich, scheduling followup");
+    if (result.hasMore) {
+      console.log("More events to enrich, will continue on next cron run");
+    }
+  } catch (error) {
+    console.error("Failed to enrich events", error);
   }
 };
 
@@ -143,10 +145,6 @@ async function updateEvent(
     },
     data,
   });
-}
-
-async function scheduleReprocess() {
-  await addJob(ENRICH_EVENTS, {}, { runAt: addMinutes(new Date(), 1) });
 }
 
 async function getLocationFromCache(ipAddress: string) {
