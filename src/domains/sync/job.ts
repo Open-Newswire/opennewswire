@@ -31,13 +31,13 @@ export async function execute(context: Context) {
       },
     },
   });
-  const existingItemGuids = existingItems.map((item) => item.guid);
+  const existingItemGuids = new Set(existingItems.map((item) => item.guid));
 
   logger.info(`Found ${existingItems.length} matching existing articles`);
 
   // 3. Insert new items
   const newItems = parsedItems
-    .filter((item) => !existingItemGuids.includes(item.guid))
+    .filter((item) => !existingItemGuids.has(item.guid))
     .map((t) => ({
       guid: t.guid,
       title: t.title,
@@ -69,7 +69,10 @@ export async function execute(context: Context) {
 }
 
 function dedupeItems(items: TransientItem[]) {
-  return items.filter(
-    (a, i, arr) => arr.findIndex((b) => b.guid === a.guid) === i,
-  );
+  const seen = new Set<string | null | undefined>();
+  return items.filter((item) => {
+    if (seen.has(item.guid)) return false;
+    seen.add(item.guid);
+    return true;
+  });
 }

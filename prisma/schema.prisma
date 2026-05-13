@@ -92,6 +92,7 @@ model Article {
   @@index([date])
   @@index([title])
   @@index([feedId])
+  @@index([feedId, date])
 }
 
 model User {
@@ -160,6 +161,7 @@ model AnalyticsEvent {
   @@index([occuredAt], type: Brin)
   @@index([sessionId])
   @@index([browserLanguage])
+  @@index([isEnriched, occuredAt])
 }
 
 model IpAddressCache {

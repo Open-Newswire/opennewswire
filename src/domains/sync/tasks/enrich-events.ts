@@ -3,54 +3,105 @@ import { EnrichmentStatus } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import { Task } from "graphile-worker";
 
-interface LocationResponse {
+interface LocationFields {
   countryCode: string;
-  region: string;
+  regionCode: string;
   city: string;
-  status?: string;
 }
 
-interface LocationResult {
-  tryLater: boolean;
-  result?: LocationResponse;
-  status?: string;
+interface BatchResponseItem {
+  status: "success" | "fail";
+  query: string;
+  countryCode?: string;
+  region?: string;
+  city?: string;
 }
 
 const EVENT_LIMIT = 5000;
+const BATCH_SIZE = 100;
+const FETCH_TIMEOUT_MS = 5000;
 
 export const enrichEventsTask: Task = async (_payload, _helpers) => {
   try {
-    const result = await getUnenrichedEvents();
+    const { events, hasMore } = await getUnenrichedEvents();
+    console.info(`Found ${events.length} unenriched events`);
 
-    console.info(`Found ${result.events.length} unenriched events`);
+    if (events.length === 0) return;
 
-    for (const event of result.events) {
-      let locationResult: LocationResult | undefined;
+    const uniqueIps = [
+      ...new Set(
+        events
+          .map((e) => e.ipAddress)
+          .filter((ip): ip is string => !!ip),
+      ),
+    ];
 
-      if (event.ipAddress) {
-        locationResult = await resolveIpToLocation(event.ipAddress);
+    const locationByIp = new Map<string, LocationFields>();
+    let rateLimited = false;
 
-        if (locationResult.tryLater) {
-          console.log(
-            "IP address rate limit reached, will retry next cron run",
-          );
-          return;
-        }
-
-        if (
-          locationResult.result?.status === "fail" ||
-          locationResult.status === "fail"
-        ) {
-          console.log("IP address lookup failed, skipping event");
-          console.log(locationResult.result);
-          continue;
+    if (uniqueIps.length > 0) {
+      const cached = await prisma.ipAddressCache.findMany({
+        where: { ipAddress: { in: uniqueIps } },
+      });
+      for (const c of cached) {
+        if (c.countryCode && c.regionCode && c.city) {
+          locationByIp.set(c.ipAddress, {
+            countryCode: c.countryCode,
+            regionCode: c.regionCode,
+            city: c.city,
+          });
         }
       }
 
-      await updateEvent(event.id, locationResult);
+      const uncached = uniqueIps.filter((ip) => !locationByIp.has(ip));
+      const newCacheEntries: {
+        ipAddress: string;
+        countryCode: string;
+        regionCode: string;
+        city: string;
+      }[] = [];
+
+      for (let i = 0; i < uncached.length; i += BATCH_SIZE) {
+        const chunk = uncached.slice(i, i + BATCH_SIZE);
+        const result = await batchLookup(chunk);
+        if (result.tryLater) {
+          rateLimited = true;
+          break;
+        }
+        for (const item of result.results) {
+          if (
+            item.status === "success" &&
+            item.countryCode &&
+            item.region &&
+            item.city
+          ) {
+            const loc = {
+              countryCode: item.countryCode,
+              regionCode: item.region,
+              city: item.city,
+            };
+            locationByIp.set(item.query, loc);
+            newCacheEntries.push({ ipAddress: item.query, ...loc });
+          }
+        }
+      }
+
+      if (newCacheEntries.length > 0) {
+        await prisma.ipAddressCache.createMany({
+          data: newCacheEntries,
+          skipDuplicates: true,
+        });
+      }
     }
 
-    if (result.hasMore) {
+    await applyEnrichment(events, locationByIp);
+
+    if (rateLimited) {
+      console.log(
+        "IP address rate limit reached during run; partial enrichment applied",
+      );
+    }
+    if (hasMore) {
       console.log("More events to enrich, will continue on next cron run");
     }
   } catch (error) {
@@ -60,108 +111,80 @@ export const enrichEventsTask: Task = async (_payload, _helpers) => {
 
 async function getUnenrichedEvents() {
   const result = await prisma.analyticsEvent.findMany({
-    where: {
-      isEnriched: false,
-    },
-    orderBy: {
-      occuredAt: "asc",
-    },
+    where: { isEnriched: false },
+    orderBy: { occuredAt: "asc" },
     take: EVENT_LIMIT + 1,
   });
-
-  if (result.length >= EVENT_LIMIT) {
-    result.splice(EVENT_LIMIT, 1);
-
-    return {
-      events: result,
-      hasMore: true,
-    };
-  } else {
-    return {
-      events: result,
-      hasMore: false,
-    };
+  if (result.length > EVENT_LIMIT) {
+    result.pop();
+    return { events: result, hasMore: true };
   }
+  return { events: result, hasMore: false };
 }
 
-async function resolveIpToLocation(ipAddress: string) {
-  const cachedResult = await getLocationFromCache(ipAddress);
-
-  if (cachedResult) {
-    return {
-      result: {
-        countryCode: cachedResult.countryCode!,
-        region: cachedResult.regionCode!,
-        city: cachedResult.city!,
+async function batchLookup(
+  ips: string[],
+): Promise<{ tryLater: boolean; results: BatchResponseItem[] }> {
+  try {
+    const response = await fetch(
+      "http://ip-api.com/batch?fields=status,query,countryCode,region,city",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ips),
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       },
-      tryLater: false,
-    };
-  }
-
-  const response = await fetch(`http://ip-api.com/json/${ipAddress}`);
-
-  if (response.status === StatusCodes.TOO_MANY_REQUESTS) {
-    return {
-      tryLater: true,
-    };
-  }
-
-  const result = (await response.json()) as LocationResponse;
-
-  if (result.city && result.countryCode) {
-    await writeToIpCache(ipAddress, result);
-
-    return {
-      tryLater: false,
-      result,
-    };
-  } else {
-    console.log("Result did not contain all required fields: ", result);
-    return {
-      tryLater: false,
-      status: "fail",
-    };
+    );
+    if (response.status === StatusCodes.TOO_MANY_REQUESTS) {
+      return { tryLater: true, results: [] };
+    }
+    const results = (await response.json()) as BatchResponseItem[];
+    return { tryLater: false, results };
+  } catch (err) {
+    console.error("ip-api batch lookup failed", err);
+    return { tryLater: false, results: [] };
   }
 }
 
-async function updateEvent(
-  eventId: string,
-  location: LocationResult | undefined,
+// Events with an IP we could not resolve are left unenriched so they retry next run.
+// Events with no IP, or with a resolved IP, are marked enriched in this pass.
+async function applyEnrichment(
+  events: Array<{ id: string; ipAddress: string | null }>,
+  locationByIp: Map<string, LocationFields>,
 ) {
-  const data = {
-    isEnriched: true,
-    enrichmentStatus: EnrichmentStatus.COMPLETED,
-    ...(location?.result
-      ? {
-          countryCode: location.result.countryCode,
-          regionCode: location.result.region,
-          city: location.result?.city,
-        }
-      : {}),
-  };
-  await prisma.analyticsEvent.update({
-    where: {
-      id: eventId,
-    },
-    data,
-  });
-}
+  const groups = new Map<
+    string,
+    { ids: string[]; location: LocationFields | null }
+  >();
 
-async function getLocationFromCache(ipAddress: string) {
-  return await prisma.ipAddressCache.findFirst({
-    where: {
-      ipAddress,
-    },
-  });
-}
+  for (const event of events) {
+    const loc = event.ipAddress ? locationByIp.get(event.ipAddress) : undefined;
+    if (event.ipAddress && !loc) continue;
+    const key = loc
+      ? `${loc.countryCode}|${loc.regionCode}|${loc.city}`
+      : "__none__";
+    const existing = groups.get(key);
+    if (existing) {
+      existing.ids.push(event.id);
+    } else {
+      groups.set(key, { ids: [event.id], location: loc ?? null });
+    }
+  }
 
-async function writeToIpCache(ipAddress: string, location: LocationResponse) {
-  await prisma.ipAddressCache.create({
-    data: {
-      ipAddress,
-      countryCode: location.countryCode,
-      regionCode: location.region,
-      city: location.city,
-    },
-  });
+  for (const { ids, location } of groups.values()) {
+    await prisma.analyticsEvent.updateMany({
+      where: { id: { in: ids } },
+      data: {
+        isEnriched: true,
+        enrichmentStatus: EnrichmentStatus.COMPLETED,
+        ...(location
+          ? {
+              countryCode: location.countryCode,
+              regionCode: location.regionCode,
+              city: location.city,
+            }
+          : {}),
+      },
+    });
+  }
 }

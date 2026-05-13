@@ -53,21 +53,25 @@ export async function startWorker() {
       task: ENRICH_EVENTS,
       match: "*/15 * * * *",
       identifier: "scheduled-enrich-events",
+      options: { maxAttempts: 3, backfillPeriod: 0 },
     },
     {
       task: CLEANUP_ARTICLES,
       match: "0 0 * * *",
       identifier: "scheduled-cleanup-articles",
+      options: { maxAttempts: 3, backfillPeriod: 0 },
     },
     {
       task: CLEANUP_EVENTS,
       match: "0 0 * * *",
       identifier: "scheduled-cleanup-events",
+      options: { maxAttempts: 3, backfillPeriod: 0 },
     },
     {
       task: CLEANUP_JOBS,
       match: "0 11 * * *",
       identifier: "scheduled-cleanup-jobs",
+      options: { maxAttempts: 3, backfillPeriod: 0 },
     },
   ];
 
