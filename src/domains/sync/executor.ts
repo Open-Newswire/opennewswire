@@ -10,7 +10,7 @@ export async function run(job: SyncJob) {
 
   try {
     logger.info(`Starting job for feedId ${job.feedId}`);
-    const feed = await prisma.feed.findFirst({ where: { id: job.feedId! } });
+    const feed = await prisma.feed.findUnique({ where: { id: job.feedId! } });
 
     if (!feed) {
       logger.error(`Error fetching feed for feedId ${job.feedId}`);
