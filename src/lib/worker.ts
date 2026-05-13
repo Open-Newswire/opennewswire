@@ -46,7 +46,7 @@ export async function addJob(
 }
 
 export async function startWorker() {
-  const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? "4", 10);
+  const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? "2", 10);
 
   const cronItems: CronItem[] = [
     {
