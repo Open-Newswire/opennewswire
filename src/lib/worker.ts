@@ -42,7 +42,7 @@ export async function addJob(
   spec?: TaskSpec,
 ) {
   const utils = await ensureWorkerUtils();
-  await utils.addJob(task, payload, spec);
+  await utils.addJob(task, payload, { maxAttempts: 3, ...spec });
 }
 
 export async function startWorker() {

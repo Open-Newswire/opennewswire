@@ -48,6 +48,8 @@ export async function forceFetch(url: string) {
   return await response.text();
 }
 
+const MAX_PAGES = 100;
+
 /**
  * Fetches and parses a feed conditionally based on the feed's last modified date and etag.
  */
@@ -78,8 +80,14 @@ export async function parseFeed(context: Context): Promise<ParserResult> {
 
     logger.debug(`Parsing page ${page}`);
     const result = parsePage(items, context);
+    allItems.push(...result.items);
 
-    if (paginationLinks?.next && result.shouldContinue) {
+    if (page >= MAX_PAGES) {
+      logger.warn(
+        `Reached MAX_PAGES (${MAX_PAGES}) for feed ${feed.id}; stopping pagination`,
+      );
+      shouldContinue = false;
+    } else if (paginationLinks?.next && result.shouldContinue) {
       logger.debug(`Feed has more pages, continuing parse`);
 
       url = paginationLinks.next;
@@ -89,8 +97,6 @@ export async function parseFeed(context: Context): Promise<ParserResult> {
 
       shouldContinue = false;
     }
-
-    allItems.push(...result.items);
   } while (shouldContinue);
 
   return {
@@ -168,10 +174,12 @@ function parsePage(items: TransientItem[], context: Context): PageResult {
       item.isHidden = shouldHide;
     }
 
-    // Execute retention logic
+    // Stop paginating once we have enough items AND we've reached items older
+    // than the retention cutoff. Feeds are newest-first, so this prevents
+    // walking the entire archive when only recent items are needed.
     if (
       context.count >= policy.minimumItems &&
-      isBefore(policy.cutoffDate, item.date)
+      isBefore(item.date, policy.cutoffDate)
     ) {
       return {
         items: collector,
@@ -180,6 +188,7 @@ function parsePage(items: TransientItem[], context: Context): PageResult {
     }
 
     collector.push(item);
+    context.count += 1;
   }
 
   return {
