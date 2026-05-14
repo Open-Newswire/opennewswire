@@ -13,6 +13,7 @@ import {
   makeWorkerUtils,
   parseCronItems,
   run,
+  type Runner,
   type TaskSpec,
   type WorkerUtils,
   type CronItem,
@@ -77,8 +78,10 @@ export async function startWorker() {
 
   const parsedCrons = parseCronItems(cronItems);
 
+  let runner: Runner;
+
   try {
-    await run({
+    runner = await run({
       connectionString: process.env.POSTGRES_URL!,
       concurrency,
       taskList: {
@@ -100,7 +103,36 @@ export async function startWorker() {
       "[graphile-worker] Failed to start — is the database reachable?",
       err,
     );
+    return;
   }
+
+  runner.events.on("pool:listen:error", (err) => {
+    console.error("[graphile-worker] Listen connection error:", err.error);
+  });
+
+  runner.events.on("pool:gracefulShutdown", (evt) => {
+    console.log(`[graphile-worker] Graceful shutdown (${evt.message})`);
+  });
+
+  runner.events.on("worker:fatalError", (evt) => {
+    console.error("[graphile-worker] Fatal worker error:", evt.error);
+  });
+
+  runner.events.on("job:error", (evt) => {
+    console.error(
+      `[graphile-worker] Job ${evt.job.task_identifier} failed:`,
+      evt.error,
+    );
+  });
+
+  runner.promise.then(
+    () => {
+      console.log("[graphile-worker] Runner stopped cleanly");
+    },
+    (err) => {
+      console.error("[graphile-worker] Runner stopped with error:", err);
+    },
+  );
 
   // Seed the first sync-all job. Subsequent runs are self-scheduled
   // by syncAllTask after each completion.
