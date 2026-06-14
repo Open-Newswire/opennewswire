@@ -1,22 +1,24 @@
 import { SyncFrequencyPreference } from "@/domains/app-preferences/schemas";
 import { getPreference } from "@/domains/app-preferences/service";
 import {
-  rescheduleNextSyncAll,
-  syncAllTask,
-  syncFeedTask,
-  enrichEventsTask,
   cleanupArticlesTask,
   cleanupEventsTask,
   cleanupJobsTask,
+  enrichEventsTask,
+  rescheduleNextSyncAll,
+  syncAllTask,
+  syncFeedTask,
 } from "@/domains/sync/tasks";
+import { withTimeouts } from "@/lib/task-timeout";
 import {
   makeWorkerUtils,
   parseCronItems,
   run,
+  type CronItem,
   type Runner,
+  type Task,
   type TaskSpec,
   type WorkerUtils,
-  type CronItem,
 } from "graphile-worker";
 
 export const SYNC_FEED = "sync-feed";
@@ -25,6 +27,24 @@ export const ENRICH_EVENTS = "enrich-events";
 export const CLEANUP_ARTICLES = "cleanup-articles";
 export const CLEANUP_EVENTS = "cleanup-events";
 export const CLEANUP_JOBS = "cleanup-jobs";
+
+/**
+ * Per-task time budgets (ms). A task that overruns its budget is aborted and
+ * failed (then retried) rather than silently holding its worker slot forever.
+ */
+const DEFAULT_TASK_TIMEOUT_MS = parseInt(
+  process.env.WORKER_TASK_TIMEOUT_MS ?? "120000",
+  10,
+);
+
+const TASK_TIMEOUTS_MS: Record<string, number> = {
+  [SYNC_FEED]: 90_000,
+  [SYNC_ALL]: 180_000,
+  [ENRICH_EVENTS]: 300_000,
+  [CLEANUP_ARTICLES]: 900_000,
+  [CLEANUP_EVENTS]: 600_000,
+  [CLEANUP_JOBS]: 600_000,
+};
 
 let workerUtils: WorkerUtils | null = null;
 
@@ -78,20 +98,26 @@ export async function startWorker() {
 
   const parsedCrons = parseCronItems(cronItems);
 
+  const taskList: Record<string, Task> = {
+    [SYNC_FEED]: syncFeedTask,
+    [SYNC_ALL]: syncAllTask,
+    [ENRICH_EVENTS]: enrichEventsTask,
+    [CLEANUP_ARTICLES]: cleanupArticlesTask,
+    [CLEANUP_EVENTS]: cleanupEventsTask,
+    [CLEANUP_JOBS]: cleanupJobsTask,
+  };
+
   let runner: Runner;
 
   try {
     runner = await run({
       connectionString: process.env.POSTGRES_URL!,
       concurrency,
-      taskList: {
-        [SYNC_FEED]: syncFeedTask,
-        [SYNC_ALL]: syncAllTask,
-        [ENRICH_EVENTS]: enrichEventsTask,
-        [CLEANUP_ARTICLES]: cleanupArticlesTask,
-        [CLEANUP_EVENTS]: cleanupEventsTask,
-        [CLEANUP_JOBS]: cleanupJobsTask,
-      },
+      taskList: withTimeouts(
+        taskList,
+        TASK_TIMEOUTS_MS,
+        DEFAULT_TASK_TIMEOUT_MS,
+      ),
       parsedCronItems: parsedCrons,
     });
 
