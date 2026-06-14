@@ -25,8 +25,23 @@ declare global {
 
 type ExtendedPrismaClient = ReturnType<typeof initPrismaClient>;
 
+const STATEMENT_TIMEOUT_MS = process.env.PG_STATEMENT_TIMEOUT_MS ?? "300000";
+const IDLE_IN_TXN_TIMEOUT_MS = process.env.PG_IDLE_IN_TXN_TIMEOUT_MS ?? "60000";
+
+function withConnectionTimeouts(url: string | undefined): string | undefined {
+  if (!url) return url;
+
+  const options = encodeURIComponent(
+    `-c statement_timeout=${STATEMENT_TIMEOUT_MS} ` +
+      `-c idle_in_transaction_session_timeout=${IDLE_IN_TXN_TIMEOUT_MS}`,
+  );
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}options=${options}`;
+}
+
 function initPrismaClient() {
   return new PrismaClient({
+    datasourceUrl: withConnectionTimeouts(process.env.POSTGRES_URL),
     omit: {
       user: {
         password_hash: true,
