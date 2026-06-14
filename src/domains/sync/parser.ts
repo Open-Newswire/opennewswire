@@ -30,6 +30,13 @@ const BASE_HEADERS = {
   "upgrade-insecure-requests": "1",
 };
 
+const FETCH_TIMEOUT_MS = 7000;
+
+function requestSignal(taskSignal?: AbortSignal): AbortSignal {
+  const timeout = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+  return taskSignal ? AbortSignal.any([timeout, taskSignal]) : timeout;
+}
+
 async function getHeaders() {
   const { userAgent } = await getPreference(UserAgentPreference);
   return {
@@ -41,9 +48,12 @@ async function getHeaders() {
 /**
  * Fetches a feed, ignoring feed's last modified date and etag.
  */
-export async function forceFetch(url: string) {
+export async function forceFetch(url: string, signal?: AbortSignal) {
   const headers = await getHeaders();
-  const response = await fetch(url, { headers });
+  const response = await fetch(url, {
+    headers,
+    signal: requestSignal(signal),
+  });
 
   return await response.text();
 }
@@ -66,7 +76,12 @@ export async function parseFeed(context: Context): Promise<ParserResult> {
   const requestHeaders = await getHeaders();
 
   do {
-    const fetchResult = await fetchFeed(url, feed, requestHeaders);
+    const fetchResult = await fetchFeed(
+      url,
+      feed,
+      requestHeaders,
+      context.signal,
+    );
 
     if (fetchResult.status === FetchStatus.NotModified) {
       return { status: FetchStatus.NotModified };
@@ -110,6 +125,7 @@ async function fetchFeed(
   url: string,
   feed: Feed,
   requestHeaders: Record<string, string>,
+  signal?: AbortSignal,
 ): Promise<FetchResult> {
   const response = await fetch(url, {
     headers: {
@@ -121,7 +137,7 @@ async function fetchFeed(
         "if-none-match": feed.etag,
       }),
     },
-    signal: AbortSignal.timeout(7000),
+    signal: requestSignal(signal),
   });
 
   if (response.status === StatusCodes.NOT_MODIFIED) {

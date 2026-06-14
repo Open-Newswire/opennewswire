@@ -5,7 +5,7 @@ import { Status, SyncJob } from "@prisma/client";
 import { sub } from "date-fns";
 import { execute } from "./job";
 
-export async function run(job: SyncJob) {
+export async function run(job: SyncJob, signal?: AbortSignal) {
   const logger = new DatabaseLogger(job);
 
   try {
@@ -31,6 +31,7 @@ export async function run(job: SyncJob) {
       feed,
       policy: retentionPolicy,
       count: 0,
+      signal,
     };
 
     await execute(context);

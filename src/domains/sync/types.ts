@@ -56,6 +56,8 @@ export interface Context {
   policy: RetentionPolicy;
   // Total count of items parsed
   count: number;
+  // Aborts in-flight fetches if the task is cancelled (e.g. on timeout)
+  signal?: AbortSignal;
 }
 export interface PageResult {
   items: TransientItem[];

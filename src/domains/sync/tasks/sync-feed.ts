@@ -1,5 +1,6 @@
 import { run } from "@/domains/sync/executor";
 import prisma from "@/lib/prisma";
+import { TimeoutAwareHelpers } from "@/lib/task-timeout";
 import { Status } from "@prisma/client";
 import { Task } from "graphile-worker";
 
@@ -7,15 +8,16 @@ interface SyncFeedPayload {
   jobId: string;
 }
 
-export const syncFeedTask: Task = async (payload, _helpers) => {
+export const syncFeedTask: Task = async (payload, helpers) => {
   const { jobId } = payload as SyncFeedPayload;
+  const { signal } = helpers as TimeoutAwareHelpers;
 
   const job = await prisma.syncJob.findUniqueOrThrow({
     where: { id: jobId },
     include: { feed: true },
   });
 
-  await run(job);
+  await run(job, signal);
 
   // If this is a child job, check if all siblings are done
   if (job.parentId) {
