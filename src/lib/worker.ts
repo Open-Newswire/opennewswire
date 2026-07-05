@@ -23,10 +23,10 @@ import {
 
 export const SYNC_FEED = "sync-feed";
 export const SYNC_ALL = "sync-all";
-export const ENRICH_EVENTS = "enrich-events";
-export const CLEANUP_ARTICLES = "cleanup-articles";
-export const CLEANUP_EVENTS = "cleanup-events";
-export const CLEANUP_JOBS = "cleanup-jobs";
+const ENRICH_EVENTS = "enrich-events";
+const CLEANUP_ARTICLES = "cleanup-articles";
+const CLEANUP_EVENTS = "cleanup-events";
+const CLEANUP_JOBS = "cleanup-jobs";
 
 /**
  * Per-task time budgets (ms). A task that overruns its budget is aborted and

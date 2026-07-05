@@ -1,45 +1,45 @@
 import type { ColumnType } from "kysely";
-export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
-export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export const Status = {
+const Status = {
     NOT_STARTED: "NOT_STARTED",
     IN_PROGRESS: "IN_PROGRESS",
     COMPLETED: "COMPLETED",
     FAILED: "FAILED"
 } as const;
-export type Status = (typeof Status)[keyof typeof Status];
-export const Trigger = {
+type Status = (typeof Status)[keyof typeof Status];
+const Trigger = {
     MANUAL: "MANUAL",
     AUTOMATIC: "AUTOMATIC"
 } as const;
-export type Trigger = (typeof Trigger)[keyof typeof Trigger];
-export const IconSource = {
+type Trigger = (typeof Trigger)[keyof typeof Trigger];
+const IconSource = {
     NONE: "NONE",
     UPLOAD: "UPLOAD",
     FAVICON: "FAVICON"
 } as const;
-export type IconSource = (typeof IconSource)[keyof typeof IconSource];
-export const AnalyticsEventType = {
+type IconSource = (typeof IconSource)[keyof typeof IconSource];
+const AnalyticsEventType = {
     QUERY: "QUERY",
     INTERACTION: "INTERACTION"
 } as const;
-export type AnalyticsEventType = (typeof AnalyticsEventType)[keyof typeof AnalyticsEventType];
-export const EnrichmentStatus = {
+type AnalyticsEventType = (typeof AnalyticsEventType)[keyof typeof AnalyticsEventType];
+const EnrichmentStatus = {
     PENDING: "PENDING",
     COMPLETED: "COMPLETED",
     FAILED: "FAILED"
 } as const;
-export type EnrichmentStatus = (typeof EnrichmentStatus)[keyof typeof EnrichmentStatus];
-export const ContentSource = {
+type EnrichmentStatus = (typeof EnrichmentStatus)[keyof typeof EnrichmentStatus];
+const ContentSource = {
     AUTOMATIC: "AUTOMATIC",
     CONTENT: "CONTENT",
     CONTENT_SNIPPET: "CONTENT_SNIPPET",
     SUMMARY: "SUMMARY"
 } as const;
-export type ContentSource = (typeof ContentSource)[keyof typeof ContentSource];
+type ContentSource = (typeof ContentSource)[keyof typeof ContentSource];
 export type AnalyticsEvent = {
     id: string;
     occuredAt: Generated<Timestamp>;

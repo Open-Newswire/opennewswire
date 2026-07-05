@@ -6,7 +6,7 @@ export interface FilterSelectOption {
   value: string;
 }
 
-export function FilterSelect({
+function FilterSelect({
   value,
   onChange,
   defaultOption,

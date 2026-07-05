@@ -43,7 +43,7 @@ export async function setPreference<S extends z.ZodTypeAny>(
   }
 }
 
-export interface CronScheduleStatus {
+interface CronScheduleStatus {
   identifier: string;
   known: boolean;
 }
