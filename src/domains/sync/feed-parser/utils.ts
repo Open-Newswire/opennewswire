@@ -49,7 +49,7 @@ export function getAtomLink(links: any[], rel: string, fallbackIdx: number) {
   if (links[fallbackIdx]) return links[fallbackIdx].$href;
 }
 
-export function getAtomDate(entry: any) {
+function getAtomDate(entry: any) {
   let pubDate;
 
   if (entry.published && typeof entry.published === "string") {
@@ -145,7 +145,7 @@ const ENCODING_ALIASES: Record<string, string> = {
   "iso-8859-1": "latin1",
 };
 
-export function getEncodingFromContentType(contentType: string) {
+function getEncodingFromContentType(contentType: string) {
   contentType = contentType || "";
   let match = contentType.match(ENCODING_REGEX);
   let encoding = (match || [])[2] || "";

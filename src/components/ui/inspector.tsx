@@ -436,17 +436,17 @@ function InspectorGroupContent({
 
 export {
   Inspector,
-  InspectorCloseButton,
+  
   InspectorContent,
-  InspectorFooter,
+  
   InspectorGroup,
-  InspectorGroupAction,
-  InspectorGroupContent,
-  InspectorGroupLabel,
+  
+  
+  
   InspectorHeader,
-  InspectorInput,
+  
   InspectorInset,
   InspectorProvider,
-  InspectorSeparator,
+  
   useInspector,
 };

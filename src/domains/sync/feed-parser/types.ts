@@ -2,13 +2,13 @@ import { TransientItem } from "@/domains/sync";
 
 export type Field = string | [string, string, object?];
 
-export interface Enclosure {
+interface Enclosure {
   url: string;
   length?: number;
   type?: string;
 }
 
-export interface Item {
+interface Item {
   [name: string]: any;
   link?: string;
   guid?: string;
