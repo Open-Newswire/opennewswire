@@ -8,7 +8,7 @@
  * to build raw queries instead of prisma.$queryRaw.
  */
 import { getCountryName } from "@/utils/get-country-name";
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import {
   Kysely,
   PostgresAdapter,
@@ -17,7 +17,8 @@ import {
 } from "kysely";
 import kyselyExtension from "prisma-extension-kysely";
 import { pagination } from "prisma-extension-pagination";
-import { DB } from "../../prisma/generated/types";
+import { DB } from "../../generated/kysely/types";
+import { PrismaClient } from "../../generated/prisma/client";
 
 declare global {
   var _prisma: ExtendedPrismaClient;
@@ -40,8 +41,12 @@ function withConnectionTimeouts(url: string | undefined): string | undefined {
 }
 
 function initPrismaClient() {
+  const adapter = new PrismaPg({
+    connectionString: withConnectionTimeouts(process.env.POSTGRES_URL),
+  });
+
   return new PrismaClient({
-    datasourceUrl: withConnectionTimeouts(process.env.POSTGRES_URL),
+    adapter,
     omit: {
       user: {
         password_hash: true,

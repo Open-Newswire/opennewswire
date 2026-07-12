@@ -1,4 +1,4 @@
-import { IconSource, Prisma } from "@prisma/client";
+import { IconSource, Prisma } from "@/lib/prisma-client";
 
 export type ArticleWithFeedLicenseAndLanguage = Prisma.ArticleGetPayload<{
   include: { feed: { include: { license: true; language: true } } };

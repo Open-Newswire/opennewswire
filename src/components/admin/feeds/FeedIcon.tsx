@@ -1,5 +1,5 @@
+import { IconSource } from "@/lib/prisma-client";
 import { Image, ImageProps } from "@mantine/core";
-import { IconSource } from "@prisma/client";
 import placeholder from "./feed-icon-placeholder.png";
 
 interface FeedIconProps {

@@ -1,9 +1,9 @@
-import * as actions from "@/domains/licenses/actions";
 import { ModalType } from "@/components/shared/modal-types";
+import * as actions from "@/domains/licenses/actions";
+import { License } from "@/lib/prisma-client";
 import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { License } from "@prisma/client";
 
 export function addLicense() {
   modals.openContextModal({

@@ -7,8 +7,8 @@ import {
   ContentSourceDisplayNames,
   FeedsWithLicenseAndLanguage,
 } from "@/domains/feeds/types";
+import { IconSource } from "@/lib/prisma-client";
 import { Badge, ColorSwatch, Group } from "@mantine/core";
-import { IconSource } from "@prisma/client";
 
 const iconSourceStrings = {
   [IconSource.FAVICON]: "Website Favicon",

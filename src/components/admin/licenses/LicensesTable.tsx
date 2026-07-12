@@ -1,9 +1,9 @@
 "use client";
 
-import { DataTable } from "@/components/ui/data-table";
-import { License } from "@prisma/client";
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { columns } from "@/components/admin/licenses/columns";
+import { DataTable } from "@/components/ui/data-table";
+import { License } from "@/lib/prisma-client";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 export function LicensesTable({ licenses }: { licenses: License[] }) {
   const table = useReactTable({

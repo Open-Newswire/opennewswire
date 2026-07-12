@@ -9,6 +9,9 @@
 # testing
 /coverage
 
+# prisma generated client + kysely types (regenerated via `prisma generate`)
+/generated
+
 # next.js
 /.next/
 /out/

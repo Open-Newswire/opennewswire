@@ -6,7 +6,7 @@ import {
 import prisma from "./prisma";
 
 import type { UserWithoutPassword } from "@/domains/users/types";
-import type { Session } from "@prisma/client";
+import type { Session } from "@/lib/prisma-client";
 
 export function generateSessionToken(): string {
   const bytes = new Uint8Array(20);

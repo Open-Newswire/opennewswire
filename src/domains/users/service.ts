@@ -1,11 +1,11 @@
 "use server";
 
-import prisma from "@/lib/prisma";
-import { invalidateAllSessions } from "@/lib/sessions";
 import { PaginatedQuery } from "@/domains/shared/schemas";
 import { UserWithoutPassword } from "@/domains/users/types";
+import prisma from "@/lib/prisma";
+import { Prisma } from "@/lib/prisma-client";
+import { invalidateAllSessions } from "@/lib/sessions";
 import { hash } from "@node-rs/argon2";
-import { Prisma } from "@prisma/client";
 
 export const fetchUsers = async ({ page = 0, size = 0 }: PaginatedQuery) => {
   return prisma.user.paginate().withPages({

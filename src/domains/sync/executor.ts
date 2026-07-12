@@ -1,7 +1,7 @@
 import { DatabaseLogger } from "@/domains/sync/db-logger";
 import { Context } from "@/domains/sync/types";
 import prisma from "@/lib/prisma";
-import { Status, SyncJob } from "@prisma/client";
+import { Status, SyncJob } from "@/lib/prisma-client";
 import { sub } from "date-fns";
 import { execute } from "./job";
 

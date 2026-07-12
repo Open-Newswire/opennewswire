@@ -1,5 +1,6 @@
 "use client";
 
+import { Article } from "@/lib/prisma-client";
 import {
   Badge,
   Table,
@@ -9,7 +10,6 @@ import {
   TableThead,
   TableTr,
 } from "@mantine/core";
-import { Article } from "@prisma/client";
 import { format } from "date-fns";
 
 export function StoriesTable({ items }: { items: Article[] }) {

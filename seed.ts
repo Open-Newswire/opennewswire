@@ -1,6 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import "dotenv/config";
+import { PrismaClient } from "./generated/prisma/client";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.POSTGRES_URL });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // Create test user
@@ -12,7 +15,8 @@ async function main() {
     create: {
       email: "dev@opennewswire.net",
       name: "Open Newswire Dev",
-      password_hash: "$argon2id$v=19$m=19456,t=2,p=1$mTY1TJH7wqsEQpGvZDh17Q$JNzmXJXJCX3oYShRvX1Oh7/oqFbkM20y0TqNczeRgcU", // "opennewswire", hashed
+      password_hash:
+        "$argon2id$v=19$m=19456,t=2,p=1$mTY1TJH7wqsEQpGvZDh17Q$JNzmXJXJCX3oYShRvX1Oh7/oqFbkM20y0TqNczeRgcU", // "opennewswire", hashed
     },
   });
 }

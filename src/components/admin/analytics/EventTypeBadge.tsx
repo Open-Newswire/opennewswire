@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { AnalyticsEventType } from "@prisma/client";
+import { AnalyticsEventType } from "@/lib/prisma-client";
 import { MousePointer2, Search } from "lucide-react";
 
 const EventTypeRenderProps = {

@@ -2,7 +2,7 @@
 
 import { EventTypeBadge } from "@/components/admin/analytics/EventTypeBadge";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-import { AnalyticsEvent } from "@prisma/client";
+import { AnalyticsEvent } from "@/lib/prisma-client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 

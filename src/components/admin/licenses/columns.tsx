@@ -1,7 +1,7 @@
 "use client";
 
 import { LicenseBadge } from "@/components/admin/licenses/LicenseBadge";
-import { License } from "@prisma/client";
+import { License } from "@/lib/prisma-client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Zap } from "lucide-react";
 import { LicenseActionMenu } from "./LicenseActionMenu";

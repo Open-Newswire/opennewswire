@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { EnrichmentStatus } from "@prisma/client";
+import { EnrichmentStatus } from "@/lib/prisma-client";
 import { CircleCheck, CircleX, Clock2 } from "lucide-react";
 
 const EnrichmentStatusRenderProps = {

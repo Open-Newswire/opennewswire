@@ -1,5 +1,5 @@
 import { SyncJobQuery } from "@/domains/jobs/schemas";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prisma-client";
 
 export function buildOrderBy(query: SyncJobQuery) {
   return {

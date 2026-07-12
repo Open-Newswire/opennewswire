@@ -12,9 +12,12 @@ import {
 import { Form, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { SaveLanguageParams, SaveLanguageSchema } from "@/domains/languages/schemas";
+import {
+  SaveLanguageParams,
+  SaveLanguageSchema,
+} from "@/domains/languages/schemas";
+import { Language } from "@/lib/prisma-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Language } from "@prisma/client";
 import { Controller, useForm } from "react-hook-form";
 
 export function LanguageEditor({

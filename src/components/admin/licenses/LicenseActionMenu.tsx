@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteLicense, editLicense } from "@/domains/licenses/triggers";
-import { License } from "@prisma/client";
+import { License } from "@/lib/prisma-client";
 import { MoreHorizontal } from "lucide-react";
 
 export function LicenseActionMenu({ license }: { license: License }) {

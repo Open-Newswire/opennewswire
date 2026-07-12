@@ -10,7 +10,9 @@
  *   PROD_POSTGRES_URL - Connection string for the production database (required)
  *   POSTGRES_URL      - Connection string for local database (uses .env default)
  */
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import "dotenv/config";
+import { PrismaClient } from "./generated/prisma/client";
 
 const prodDbUrl = process.env.PROD_POSTGRES_URL;
 
@@ -23,14 +25,12 @@ if (!prodDbUrl) {
 }
 
 const prodPrisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: prodDbUrl,
-    },
-  },
+  adapter: new PrismaPg({ connectionString: prodDbUrl }),
 });
 
-const localPrisma = new PrismaClient();
+const localPrisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.POSTGRES_URL }),
+});
 
 async function main() {
   console.log("Connecting to production database...");

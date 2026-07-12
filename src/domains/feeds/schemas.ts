@@ -1,6 +1,6 @@
-import { ContentSource, IconSource } from "@prisma/client";
-import { z } from "zod";
 import { PaginatedQuerySchema } from "@/domains/shared/schemas";
+import { ContentSource, IconSource } from "@/lib/prisma-client";
+import { z } from "zod";
 
 export type SaveFeedParams = z.infer<typeof FeedSchema>;
 

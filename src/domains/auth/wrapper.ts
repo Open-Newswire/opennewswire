@@ -1,6 +1,6 @@
 import { validateRequest } from "@/domains/auth/service";
 import type { UserWithoutPassword } from "@/domains/users/types";
-import type { Session } from "@prisma/client";
+import type { Session } from "@/lib/prisma-client";
 
 /**
  * Generic wrapper for server actions that require authentication.

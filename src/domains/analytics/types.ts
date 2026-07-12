@@ -1,7 +1,7 @@
 import { Feed } from "@/domains/feeds/types";
 import { Language } from "@/domains/languages/types";
 import { License } from "@/domains/licenses/types";
-import { AnalyticsEventType } from "@prisma/client";
+import { AnalyticsEventType } from "@/lib/prisma-client";
 
 export const ANALYTICS_COOKIE_NAME = "opennewswire-analytics";
 

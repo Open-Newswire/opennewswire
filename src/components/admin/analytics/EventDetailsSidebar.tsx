@@ -1,4 +1,3 @@
-import { getEventDetails } from "@/domains/analytics/actions";
 import { EnrichmentStatusBadge } from "@/components/admin/analytics/EnrichmentStatusBadge";
 import { EventTypeBadge } from "@/components/admin/analytics/EventTypeBadge";
 import { LicenseBadge } from "@/components/admin/licenses/LicenseBadge";
@@ -16,7 +15,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { AnalyticsEventDetails } from "@/domains/analytics";
-import { AnalyticsEvent } from "@prisma/client";
+import { getEventDetails } from "@/domains/analytics/actions";
+import { AnalyticsEvent } from "@/lib/prisma-client";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { SearchIcon } from "lucide-react";

@@ -1,19 +1,19 @@
 "use client";
 
 import { AnalyticsFilterBar } from "@/components/admin/analytics/AnalyticsFilterBar";
-import { columns } from "./events-columns";
 import { EventDetailsSidebar } from "@/components/admin/analytics/EventDetailsSidebar";
 import { DataTable } from "@/components/ui/data-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { DataTableViewOptions } from "@/components/ui/data-table-view-options";
 import { useInspector } from "@/components/ui/inspector";
+import { PaginatedData, SortDirection } from "@/domains/shared/types";
 import { usePaginatedQuery } from "@/hooks/use-paginated-query";
-import { SortDirection, PaginatedData } from "@/domains/shared/types";
+import { AnalyticsEvent } from "@/lib/prisma-client";
 import { useSortQueryState } from "@/utils/use-sort-query-state";
-import { AnalyticsEvent } from "@prisma/client";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { columns } from "./events-columns";
 
 export function EventsTable({ data }: { data: PaginatedData<AnalyticsEvent> }) {
   const { showInspector, open, dismissInspector } = useInspector();

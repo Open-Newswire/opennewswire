@@ -1,5 +1,5 @@
 import { LanguageQuery } from "@/domains/languages/schemas";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prisma-client";
 
 export function buildOrderBy(query: LanguageQuery) {
   return {

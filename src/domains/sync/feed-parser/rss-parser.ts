@@ -1,6 +1,6 @@
 import { Feed } from "@/domains/feeds/types";
 import { SyncLogger, TransientItem } from "@/domains/sync";
-import { ContentSource } from "@prisma/client";
+import { ContentSource } from "@/lib/prisma-client";
 import hash from "object-hash";
 import * as utils from "./utils";
 

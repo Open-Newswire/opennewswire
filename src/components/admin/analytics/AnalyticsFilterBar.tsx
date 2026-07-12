@@ -8,15 +8,15 @@ import {
 } from "@/components/ui/data-table-filter";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import {
-  analyticsQuerySearchParams,
   AnalyticsEventTypeLabels,
+  analyticsQuerySearchParams,
 } from "@/domains/analytics";
 import { Language } from "@/domains/languages/types";
 import { License } from "@/domains/licenses/types";
+import { AnalyticsEventType } from "@/lib/prisma-client";
 import { mapToOptions } from "@/utils/map-to-display-options";
 import { useFilterOptions } from "@/utils/use-filter-options";
 import { UTCDate } from "@date-fns/utc";
-import { AnalyticsEventType } from "@prisma/client";
 import {
   CreativeCommons,
   Earth,

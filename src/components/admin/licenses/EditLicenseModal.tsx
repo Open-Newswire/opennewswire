@@ -2,8 +2,8 @@
 
 import { updateLicense } from "@/domains/licenses/actions";
 import { SaveLicenseParams } from "@/domains/licenses/schemas";
+import { License } from "@/lib/prisma-client";
 import { ContextModalProps } from "@mantine/modals";
-import { License } from "@prisma/client";
 import { LicenseEditor } from "../licenses/LicenseEditor";
 
 export function EditLicenseModal({

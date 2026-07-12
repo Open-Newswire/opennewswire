@@ -1,10 +1,10 @@
 "use client";
 
+import { LanguageEditor } from "@/components/admin/languages/LanguageEditor";
 import { updateLanguage } from "@/domains/languages/actions";
 import { SaveLanguageParams } from "@/domains/languages/schemas";
+import { Language } from "@/lib/prisma-client";
 import { ContextModalProps } from "@mantine/modals";
-import { Language } from "@prisma/client";
-import { LanguageEditor } from "@/components/admin/languages/LanguageEditor";
 
 export function EditLanguageModal({
   context,
