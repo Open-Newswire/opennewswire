@@ -5,7 +5,7 @@ import { TriggerChip } from "@/components/admin/jobs/TriggerChip";
 import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { SyncJobWithFeed } from "@/domains/jobs/types";
-import { Status } from "@prisma/client";
+import { Status } from "@/lib/prisma-client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -15,8 +15,12 @@ export const columns: ColumnDef<SyncJobWithFeed>[] = [
     header: "Feed",
     cell: ({ row }) => {
       const feed = row.original.feed;
-      return feed?.title ?? (
-        <span className="text-sm italic text-muted-foreground">All Feeds</span>
+      return (
+        feed?.title ?? (
+          <span className="text-sm italic text-muted-foreground">
+            All Feeds
+          </span>
+        )
       );
     },
     meta: {

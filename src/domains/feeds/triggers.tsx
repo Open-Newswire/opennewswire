@@ -1,12 +1,12 @@
 "use client";
 
-import * as actions from "@/domains/feeds/actions";
 import { ModalType } from "@/components/shared/modal-types";
+import * as actions from "@/domains/feeds/actions";
 import { FeedPreview } from "@/domains/feeds/types";
+import { Feed } from "@/lib/prisma-client";
 import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { Feed } from "@prisma/client";
 
 export function addFeed() {
   modals.openContextModal({

@@ -1,5 +1,3 @@
-import prisma from "@/lib/prisma";
-import { AnalyticsQuery, PaginatedAnalyticsQuery } from "@/domains/analytics/schemas";
 import {
   averageSessionDuration,
   buildEventsOrderBy,
@@ -20,13 +18,18 @@ import {
   uniqueSessionsByDay,
 } from "@/domains/analytics/queries";
 import {
+  AnalyticsQuery,
+  PaginatedAnalyticsQuery,
+} from "@/domains/analytics/schemas";
+import {
   AnalyticsEventDetails,
   TopArticleCount,
   TopSearchesCount,
 } from "@/domains/analytics/types";
 import { PaginatedData } from "@/domains/shared/types";
+import prisma from "@/lib/prisma";
+import { AnalyticsEventType } from "@/lib/prisma-client";
 import { getCountryName } from "@/utils/get-country-name";
-import { AnalyticsEventType } from "@prisma/client";
 import { parse as parseLanguageCode } from "accept-language-parser";
 import { format } from "date-fns";
 import { NextRequest } from "next/server";

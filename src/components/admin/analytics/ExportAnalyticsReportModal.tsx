@@ -27,12 +27,12 @@ import {
 import { AnalyticsEventTypeLabels } from "@/domains/analytics/types";
 import { Language } from "@/domains/languages/types";
 import { License } from "@/domains/licenses/types";
+import { AnalyticsEventType } from "@/lib/prisma-client";
 import { mapToOptions } from "@/utils/map-to-display-options";
 import { useFilterOptions } from "@/utils/use-filter-options";
 import { UTCDate } from "@date-fns/utc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ContextModalProps } from "@mantine/modals";
-import { AnalyticsEventType } from "@prisma/client";
 import { startOfDay, subDays } from "date-fns";
 import {
   CalendarIcon,

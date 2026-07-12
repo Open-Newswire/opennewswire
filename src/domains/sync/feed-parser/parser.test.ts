@@ -1,6 +1,6 @@
 import { Feed } from "@/domains/feeds/types";
 import { SyncLogger } from "@/domains/sync";
-import { ContentSource } from "@prisma/client";
+import { ContentSource } from "@/lib/prisma-client";
 import { beforeEach, describe, expect, it } from "vitest";
 import { Parser } from "./parser";
 
@@ -775,9 +775,7 @@ describe("Parser", () => {
 
       const result = await parser.parseString(rss2Feed, MOCK_FEED);
 
-      expect(result.items[0].content).toBe(
-        "Content with  and 'apostrophes'",
-      );
+      expect(result.items[0].content).toBe("Content with  and 'apostrophes'");
     });
 
     it("should decode numeric HTML entities in RSS 2.0 feeds", async () => {

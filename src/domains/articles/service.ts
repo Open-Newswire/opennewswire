@@ -1,12 +1,12 @@
-import prisma from "@/lib/prisma";
-import { ArticleQuery } from "@/domains/articles/schemas";
 import {
   buildArticleQueryStatement,
   buildOrderBy,
   buildWhere,
 } from "@/domains/articles/query-converter";
+import { ArticleQuery } from "@/domains/articles/schemas";
 import { ArticleWithMetadata } from "@/domains/articles/types";
-import { IconSource } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { IconSource } from "@/lib/prisma-client";
 import { PageNumberPagination } from "prisma-extension-pagination/dist/types";
 
 export async function fetchArticles(query: ArticleQuery) {

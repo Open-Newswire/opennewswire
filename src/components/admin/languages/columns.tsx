@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
-import { Language } from "@prisma/client";
+import { Language } from "@/lib/prisma-client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Check, Zap } from "lucide-react";
 import { LanguagesActionMenu } from "./LanguagesActionMenu";

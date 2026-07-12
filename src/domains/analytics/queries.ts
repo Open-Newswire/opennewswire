@@ -1,6 +1,9 @@
+import {
+  AnalyticsQuery,
+  PaginatedAnalyticsQuery,
+} from "@/domains/analytics/schemas";
 import prisma from "@/lib/prisma";
-import { AnalyticsQuery, PaginatedAnalyticsQuery } from "@/domains/analytics/schemas";
-import { AnalyticsEventType, Prisma } from "@prisma/client";
+import { AnalyticsEventType, Prisma } from "@/lib/prisma-client";
 import { addDays } from "date-fns";
 import { sql } from "kysely";
 

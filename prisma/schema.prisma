@@ -1,15 +1,16 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider        = "prisma-client"
   previewFeatures = ["fullTextSearchPostgres"]
+  output          = "../generated/prisma"
 }
 
 generator kysely {
   provider = "prisma-kysely"
+  output   = "../generated/kysely"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URL")
 }
 
 model License {
@@ -38,13 +39,13 @@ model Language {
 }
 
 model Feed {
-  id                 String     @id @default(cuid())
-  createdAt          DateTime   @default(now())
+  id                 String        @id @default(cuid())
+  createdAt          DateTime      @default(now())
   updatedAt          DateTime?
-  isActive           Boolean    @default(true)
+  isActive           Boolean       @default(true)
   title              String
   url                String
-  iconSource         IconSource @default(NONE)
+  iconSource         IconSource    @default(NONE)
   iconUrl            String?
   iconAssetUrl       String?
   description        String?
@@ -59,8 +60,8 @@ model Feed {
   etag               String?
   contentSource      ContentSource @default(AUTOMATIC)
   articles           Article[]
-  language           Language?  @relation(fields: [languageId], references: [id])
-  license            License?   @relation(fields: [licenseId], references: [id])
+  language           Language?     @relation(fields: [languageId], references: [id])
+  license            License?      @relation(fields: [licenseId], references: [id])
   syncJobs           SyncJob[]
 
   @@index([title])
@@ -165,10 +166,10 @@ model AnalyticsEvent {
 }
 
 model IpAddressCache {
-  ipAddress        String             @id
-  countryCode      String?
-  regionCode       String?
-  city             String?
+  ipAddress   String  @id
+  countryCode String?
+  regionCode  String?
+  city        String?
 }
 
 enum Status {

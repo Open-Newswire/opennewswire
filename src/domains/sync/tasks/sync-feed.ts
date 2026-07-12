@@ -1,7 +1,7 @@
 import { run } from "@/domains/sync/executor";
 import prisma from "@/lib/prisma";
+import { Status } from "@/lib/prisma-client";
 import { TimeoutAwareHelpers } from "@/lib/task-timeout";
-import { Status } from "@prisma/client";
 import { Task } from "graphile-worker";
 
 interface SyncFeedPayload {

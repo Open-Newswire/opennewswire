@@ -1,4 +1,4 @@
-import { Prisma, Language as PrismaLanguage } from "@prisma/client";
+import { Prisma, Language as PrismaLanguage } from "@/lib/prisma-client";
 
 export type Language = PrismaLanguage;
 

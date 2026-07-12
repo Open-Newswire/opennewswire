@@ -1,9 +1,15 @@
 import { FeedBadge } from "@/components/admin/feeds/FeedBadge";
 import { FeedIcon } from "@/components/admin/feeds/FeedIcon";
-import { ModalFooter } from "@/components/shared/ModalFooter";
 import { BlobUploader } from "@/components/shared/BlobUploader";
+import { ModalFooter } from "@/components/shared/ModalFooter";
 import { SaveFeedParams } from "@/domains/feeds/schemas";
 import { ContentSourceDisplayNames, FeedPreview } from "@/domains/feeds/types";
+import {
+  ContentSource,
+  IconSource,
+  Language,
+  License,
+} from "@/lib/prisma-client";
 import {
   Box,
   Button,
@@ -24,7 +30,6 @@ import {
   TextInput,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
-import { ContentSource, IconSource, Language, License } from "@prisma/client";
 import { ReactNode, useEffect, useState } from "react";
 
 const ContentSourceOptions: ComboboxData = [

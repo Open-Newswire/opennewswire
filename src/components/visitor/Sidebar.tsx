@@ -1,6 +1,7 @@
 "use client";
 
 import { ccsymbols } from "@/app/fonts";
+import { Language, License } from "@/lib/prisma-client";
 import {
   AppShellSection,
   Checkbox,
@@ -8,7 +9,6 @@ import {
   ScrollArea,
   Text,
 } from "@mantine/core";
-import { Language, License } from "@prisma/client";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 
 export function Sidebar({

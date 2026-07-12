@@ -1,5 +1,6 @@
 import { ccsymbols } from "@/app/fonts";
 import { SaveLicenseParams } from "@/domains/licenses/schemas";
+import { License } from "@/lib/prisma-client";
 import {
   ActionIcon,
   Button,
@@ -10,7 +11,6 @@ import {
   TextInput,
 } from "@mantine/core";
 import { isNotEmpty, matches, useForm } from "@mantine/form";
-import { License } from "@prisma/client";
 import { IconCreativeCommons } from "@tabler/icons-react";
 import classes from "./SymbolField.module.css";
 

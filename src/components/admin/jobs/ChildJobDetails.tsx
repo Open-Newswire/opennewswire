@@ -2,7 +2,7 @@ import { StatusChip } from "@/components/admin/jobs/StatusChip";
 import { TriggerChip } from "@/components/admin/jobs/TriggerChip";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { SyncJobWithFeed } from "@/domains/jobs/types";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prisma-client";
 import { format } from "date-fns";
 import Link from "next/link";
 

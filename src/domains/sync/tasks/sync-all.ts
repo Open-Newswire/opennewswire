@@ -1,8 +1,8 @@
 import { SyncFrequencyPreference } from "@/domains/app-preferences/schemas";
 import { getPreference } from "@/domains/app-preferences/service";
 import prisma from "@/lib/prisma";
+import { Status, Trigger } from "@/lib/prisma-client";
 import { addJob, SYNC_FEED } from "@/lib/worker";
-import { Status, Trigger } from "@prisma/client";
 import { Task } from "graphile-worker";
 import { rescheduleNextSyncAll } from "./schedule-helpers";
 

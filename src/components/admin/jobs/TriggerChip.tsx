@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Trigger } from "@prisma/client";
+import { Trigger } from "@/lib/prisma-client";
 import { RefreshCw, Zap } from "lucide-react";
 
 const triggerStyles: Record<

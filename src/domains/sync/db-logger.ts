@@ -1,6 +1,6 @@
 import { SyncLogger } from "@/domains/sync";
 import prisma from "@/lib/prisma";
-import { SyncJob } from "@prisma/client";
+import { SyncJob } from "@/lib/prisma-client";
 
 export class DatabaseLogger implements SyncLogger {
   private job: SyncJob;

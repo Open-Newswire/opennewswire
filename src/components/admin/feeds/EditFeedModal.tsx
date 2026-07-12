@@ -1,11 +1,11 @@
 "use client";
 
+import { FeedDetailsEditor } from "@/components/admin/feeds/FeedDetailsEditor";
 import { updateFeed } from "@/domains/feeds/actions";
 import { SaveFeedParams } from "@/domains/feeds/schemas";
+import { Feed } from "@/lib/prisma-client";
 import { ContextModalProps } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { Feed } from "@prisma/client";
-import { FeedDetailsEditor } from "@/components/admin/feeds/FeedDetailsEditor";
 
 export function EditFeedModal({
   context,

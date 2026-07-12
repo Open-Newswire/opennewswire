@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
-import { EnrichmentStatus } from "@prisma/client";
-import { StatusCodes } from "http-status-codes";
+import { EnrichmentStatus } from "@/lib/prisma-client";
 import { Task } from "graphile-worker";
+import { StatusCodes } from "http-status-codes";
 
 interface LocationFields {
   countryCode: string;
@@ -30,9 +30,7 @@ export const enrichEventsTask: Task = async (_payload, _helpers) => {
 
     const uniqueIps = [
       ...new Set(
-        events
-          .map((e) => e.ipAddress)
-          .filter((ip): ip is string => !!ip),
+        events.map((e) => e.ipAddress).filter((ip): ip is string => !!ip),
       ),
     ];
 

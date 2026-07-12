@@ -1,5 +1,5 @@
 import { FeedQuery } from "@/domains/feeds/schemas";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prisma-client";
 
 export function buildOrderBy(query: FeedQuery) {
   if (["license", "language"].includes(query.sortBy)) {

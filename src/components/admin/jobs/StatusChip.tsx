@@ -1,10 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import { Status } from "@prisma/client";
+import { Status } from "@/lib/prisma-client";
 
-const statusStyles: Record<
-  Status,
-  { title: string; className: string }
-> = {
+const statusStyles: Record<Status, { title: string; className: string }> = {
   [Status.COMPLETED]: {
     title: "Completed",
     className: "bg-green-100 text-green-900 border-green-200",

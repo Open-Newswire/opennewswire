@@ -1,10 +1,10 @@
 /**
  * The dispatcher is responsible for receiving sync job requests and dispatching them to workers.
  */
-import prisma from "@/lib/prisma";
-import { addJob, SYNC_FEED, SYNC_ALL } from "@/lib/worker";
 import { Feed } from "@/domains/feeds/types";
-import { Status, Trigger } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { Status, Trigger } from "@/lib/prisma-client";
+import { addJob, SYNC_ALL, SYNC_FEED } from "@/lib/worker";
 
 export async function dispatchSync(feed: Feed) {
   const job = await prisma.syncJob.create({

@@ -1,4 +1,4 @@
-import { ContentSource, Prisma, Feed as PrismaFeed } from "@prisma/client";
+import { ContentSource, Prisma, Feed as PrismaFeed } from "@/lib/prisma-client";
 
 export type Feed = PrismaFeed;
 

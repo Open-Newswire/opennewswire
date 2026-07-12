@@ -1,10 +1,10 @@
-import prisma from "@/lib/prisma";
 import { ArticleQuery } from "@/domains/articles/schemas";
 import { ArticleVisibility } from "@/domains/articles/types";
 import { FeedStatus } from "@/domains/feeds/types";
 import { SortDirection } from "@/domains/shared/types";
+import prisma from "@/lib/prisma";
+import { Prisma } from "@/lib/prisma-client";
 import { sanitizeSearchString } from "@/utils/sanitize-search-string";
-import { Prisma } from "@prisma/client";
 import { sql } from "kysely";
 
 export function buildOrderBy(query: ArticleQuery) {
