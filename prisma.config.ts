@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 export default defineConfig({
   // the main entry for your schema
@@ -10,10 +10,7 @@ export default defineConfig({
     path: "prisma/migrations",
     seed: 'ts-node --compiler-options {"module":"CommonJS"} seed.ts',
   },
-  // The database URL
   datasource: {
-    // Type Safe env() helper
-    // Does not replace the need for dotenv
-    url: env("POSTGRES_URL"),
+    url: process.env.POSTGRES_URL,
   },
 });
