@@ -22,18 +22,20 @@ model License {
   backgroundColor String
   textColor       String
   feeds           Feed[]
+  articles        Article[]
 
   @@index([slug])
 }
 
 model Language {
-  id        String   @id @default(cuid())
-  slug      String?  @unique
-  createdAt DateTime @default(now())
+  id        String    @id @default(cuid())
+  slug      String?   @unique
+  createdAt DateTime  @default(now())
   name      String
-  isRtl     Boolean  @default(false)
-  order     Int      @default(0)
+  isRtl     Boolean   @default(false)
+  order     Int       @default(0)
   feeds     Feed[]
+  articles  Article[]
 
   @@index([slug])
 }
@@ -82,6 +84,10 @@ model Article {
   isHidden       Boolean                  @default(false)
   feedId         String
   feed           Feed                     @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  languageId     String?
+  language       Language?                @relation(fields: [languageId], references: [id])
+  licenseId      String?
+  license        License?                 @relation(fields: [licenseId], references: [id])
   tsEn           Unsupported("tsvector")? @default(dbgenerated())
   AnalyticsEvent AnalyticsEvent[]
 
@@ -94,6 +100,10 @@ model Article {
   @@index([title])
   @@index([feedId])
   @@index([feedId, date])
+  @@index([languageId])
+  @@index([licenseId])
+  @@index([languageId, date])
+  @@index([licenseId, date])
 }
 
 model User {

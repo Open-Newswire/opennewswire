@@ -5,9 +5,22 @@ import {
 } from "@/domains/articles/query-converter";
 import { ArticleQuery } from "@/domains/articles/schemas";
 import { ArticleWithMetadata } from "@/domains/articles/types";
+import { fetchLanguages } from "@/domains/languages/actions";
+import { fetchLicenses } from "@/domains/licenses/actions";
 import prisma from "@/lib/prisma";
 import { IconSource } from "@/lib/prisma-client";
 import { PageNumberPagination } from "prisma-extension-pagination/dist/types";
+
+function mapSlugsToIds(
+  slugs: string[] | undefined,
+  records: { id: string; slug: string | null }[],
+): string[] | undefined {
+  if (!slugs?.length) return undefined;
+  const bySlug = new Map(records.map((r) => [r.slug, r.id]));
+  return slugs
+    .map((slug) => bySlug.get(slug))
+    .filter((id): id is string => Boolean(id));
+}
 
 export async function fetchArticles(query: ArticleQuery) {
   return prisma.article
@@ -48,7 +61,15 @@ export const fetchArticlesByFeed = async (feedId: string) => {
 export const fetchArticlesForFeedReader = async (
   query: ArticleQuery,
 ): Promise<[ArticleWithMetadata[], PageNumberPagination]> => {
-  const rawQuery = buildArticleQueryStatement(query);
+  const [languages, licenses] = await Promise.all([
+    query.languages?.length ? fetchLanguages() : Promise.resolve([]),
+    query.licenses?.length ? fetchLicenses() : Promise.resolve([]),
+  ]);
+
+  const rawQuery = buildArticleQueryStatement(query, {
+    languageIds: mapSlugsToIds(query.languages, languages),
+    licenseIds: mapSlugsToIds(query.licenses, licenses),
+  });
   const results = await rawQuery.execute();
 
   const mapped: ArticleWithMetadata[] = results.map((r) => {
@@ -75,7 +96,7 @@ export const fetchArticlesForFeedReader = async (
           isRtl: r.languageIsRtl,
         },
         license: {
-          id: r.languageId as string,
+          id: r.licenseId as string,
           name: r.licenseName,
           slug: r.licenseSlug,
           backgroundColor: r.licenseBackgroundColor,

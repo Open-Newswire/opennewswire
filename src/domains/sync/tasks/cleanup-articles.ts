@@ -34,26 +34,25 @@ export const cleanupArticlesTask: Task = async (_payload, _helpers) => {
     // If we have more than the minimum items since the cutoff date, delete
     // any items older than the cutoff date
     if (numItemsAfterCutoffDate > policy.minCount) {
-      await prisma.article.deleteMany({
-        where: {
-          date: {
-            lt: cutoffDate,
-          },
-          feedId: feed.id,
-        },
-      });
+      await prisma.$kysely
+        .deleteFrom("Article")
+        .where("feedId", "=", feed.id)
+        .where("date", "<", cutoffDate)
+        .execute();
     } else {
       // Otherwise delete all but the # minimum items, regardless of date
-      await prisma.$queryRaw`
-      DELETE FROM "Article"
-      WHERE id NOT IN (
-        SELECT id
-        FROM "Article"
-        WHERE "Article"."feedId" = ${feed.id}
-        ORDER BY "date" DESC
-        LIMIT ${policy.minCount}
-      )
-      AND "Article"."feedId" = ${feed.id}`;
+      await prisma.$kysely
+        .deleteFrom("Article")
+        .where("feedId", "=", feed.id)
+        .where("id", "not in", (qb) =>
+          qb
+            .selectFrom("Article")
+            .select("id")
+            .where("feedId", "=", feed.id)
+            .orderBy("date", "desc")
+            .limit(policy.minCount),
+        )
+        .execute();
     }
 
     console.info(`Deleting articles outside the rentention policy`);
