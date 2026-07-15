@@ -46,6 +46,8 @@ export async function execute(context: Context) {
       date: t.date,
       content: t.content,
       feedId: feed.id,
+      languageId: feed.languageId,
+      licenseId: feed.licenseId,
       isHidden: t.isHidden,
     }));
 

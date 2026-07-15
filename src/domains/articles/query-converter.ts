@@ -64,8 +64,8 @@ export function buildWhere(query: ArticleQuery) {
 const BASE_QUERY = prisma.$kysely
   .selectFrom("Article as a")
   .innerJoin("Feed as f", "f.id", "a.feedId")
-  .innerJoin("License as li", "li.id", "f.licenseId")
-  .innerJoin("Language as la", "la.id", "f.languageId")
+  .innerJoin("License as li", "li.id", "a.licenseId")
+  .innerJoin("Language as la", "la.id", "a.languageId")
   .select([
     "a.id as id",
     "a.title",
@@ -82,29 +82,32 @@ const BASE_QUERY = prisma.$kysely
     "f.iconSource as feedIconSource",
     "f.licenseText as licenseText",
     "f.licenseUrl as licenseUrl",
-    "f.licenseId as licenseId",
+    "a.licenseId as licenseId",
     "li.slug as licenseSlug",
     "li.backgroundColor as licenseBackgroundColor",
     "li.textColor as licenseTextColor",
     "li.name as licenseName",
     "li.symbols as licenseSymbols",
-    "f.languageId as languageId",
+    "a.languageId as languageId",
     "la.slug as languageSlug",
     "la.name as languageName",
     "la.isRtl as languageIsRtl",
   ])
   .where(sql`a.date`, "<=", sql`NOW()`);
 
-export function buildArticleQueryStatement(query: ArticleQuery) {
+export function buildArticleQueryStatement(
+  query: ArticleQuery,
+  filters: { licenseIds?: string[]; languageIds?: string[] } = {},
+) {
   let baseQuery = BASE_QUERY;
 
-  // Where
-  if (query.licenses) {
-    baseQuery = baseQuery.where("li.slug", "in", query.licenses);
+  // Where - filter directly on the denormalized ids replicated onto Article
+  if (filters.licenseIds) {
+    baseQuery = baseQuery.where("a.licenseId", "in", filters.licenseIds);
   }
 
-  if (query.languages) {
-    baseQuery = baseQuery.where("la.slug", "in", query.languages);
+  if (filters.languageIds) {
+    baseQuery = baseQuery.where("a.languageId", "in", filters.languageIds);
   }
 
   if (query.feedStatus && query.feedStatus !== FeedStatus.all) {
